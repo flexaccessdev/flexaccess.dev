@@ -73,6 +73,12 @@
   flex-shrink: 0;
 }
 
+.nav-github-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .nav-link:hover {
   color: var(--ink);
   background: var(--accent-tint);
@@ -779,6 +785,11 @@
     width: 16px;
     height: 16px;
     border-radius: 3px;
+  }
+
+  .nav-github-icon {
+    width: 16px;
+    height: 16px;
   }
 
   .td-link-label,

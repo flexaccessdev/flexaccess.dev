@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
   useLocation,
 } from "react-router";
+import { Github } from "lucide-react";
 import type { Route } from "./+types/root";
 import indexStylesheet from "./index.css?url";
 import appStylesheet from "./app.css?url";
@@ -79,6 +80,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   flextunnel
                 </a>
                 <a href={GITHUB_ORG_URL} className="nav-link nav-link-external">
+                  <Github className="nav-github-icon" aria-hidden="true" />
                   GitHub
                 </a>
               </nav>
