@@ -11,7 +11,10 @@ export function ProductPage({ product }: { product: Product }) {
       <div className="container">
         <header className="product-hero">
           <p className="kicker">flexaccess.dev / {product.slug}</p>
-          <h1 className="product-title">{product.name}</h1>
+          <h1 className="product-title">
+            <img src={`/${product.slug}.svg`} alt="" className="product-icon" />
+            {product.name}
+          </h1>
           <p className="lede">{product.tagline}</p>
 
           <dl className="facts">

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="ezvpn">
+  <!-- Source: https://github.com/flexaccessdev/ezvpn-apple/blob/main/icon.svg -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0" stop-color="rgb(7%,65%,51%)"/>
+      <stop offset="1" stop-color="rgb(2%,40%,36%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <path d="M512 215.04q146.432 0 266.24 40.96v256q0 204.8-266.24 296.96Q245.76 716.8 245.76 512V256Q365.568 215.04 512 215.04Z" fill="none" stroke="#fff" stroke-width="51.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="512" cy="460.8" r="66.56" fill="#fff"/>
+  <path d="M483.328 465.92h57.344l24.576 148.48H458.752Z" fill="#fff"/>
+</svg>

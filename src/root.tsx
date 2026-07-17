@@ -71,9 +71,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               <nav className="site-nav" aria-label="Main">
                 <a href="/ezvpn" className={navLinkClass(pathname, "/ezvpn")}>
+                  <img src="/ezvpn.svg" alt="" className="nav-product-icon" />
                   ezvpn
                 </a>
                 <a href="/flextunnel" className={navLinkClass(pathname, "/flextunnel")}>
+                  <img src="/flextunnel.svg" alt="" className="nav-product-icon" />
                   flextunnel
                 </a>
                 <a href={GITHUB_ORG_URL} className="nav-link nav-link-external">

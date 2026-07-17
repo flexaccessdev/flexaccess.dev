@@ -1,9 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0f766e"/>
-  <!-- firewall segments with a gap the tunnel passes through -->
-  <rect x="34" y="10" width="7" height="15" rx="3.5" fill="#ffffff" opacity="0.5"/>
-  <rect x="34" y="39" width="7" height="15" rx="3.5" fill="#ffffff" opacity="0.5"/>
-  <!-- tunnel line through the gap, ending in an arrowhead -->
-  <path d="M11 32h30" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
-  <path d="M41 22l12 10-12 10" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Flexaccess">
+  <rect width="64" height="64" rx="12" fill="#0f766e"/>
+  <path fill="#ffffff" d="M32 8c-7.7 0-14 6.3-14 14v4h8v-4a6 6 0 0 1 12 0v4h8v-4c0-7.7-6.3-14-14-14z"/>
+  <rect x="12" y="24" width="40" height="32" rx="8" fill="#ffffff"/>
+  <circle cx="32" cy="38" r="4" fill="#0f766e"/>
+  <rect x="29" y="38" width="6" height="10" rx="3" fill="#0f766e"/>
 </svg>

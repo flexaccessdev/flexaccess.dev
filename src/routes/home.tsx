@@ -126,7 +126,10 @@ export default function Home() {
             {products.map((product) => (
               <article key={product.slug} className="tool-card">
                 <p className="kicker">flexaccess.dev/{product.slug}</p>
-                <h3>{product.name}</h3>
+                <h3 className="tool-title">
+                  <img src={`/${product.slug}.svg`} alt="" className="tool-icon" />
+                  {product.name}
+                </h3>
                 <p className="tool-tagline">{product.tagline}</p>
                 <ul className="chip-row">
                   {product.chips.map((chip) => (
@@ -160,9 +163,11 @@ export default function Home() {
               <div className="compare-row compare-head" role="row">
                 <span role="columnheader" />
                 <a href="/ezvpn" role="columnheader">
+                  <img src="/ezvpn.svg" alt="" className="compare-icon" />
                   ezvpn
                 </a>
                 <a href="/flextunnel" role="columnheader">
+                  <img src="/flextunnel.svg" alt="" className="compare-icon" />
                   flextunnel
                 </a>
               </div>
