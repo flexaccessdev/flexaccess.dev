@@ -34,7 +34,7 @@ export const ezvpn: Product = {
   chips: ["IP layer", "root required"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
-    "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
+    "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. By default it runs as a split tunnel, carrying only the private prefixes you need, though it can full-tunnel everything when you want it to. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
     "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand, as long as the number of connected devices fits the subnet's address space. A typical deployment is a small ezvpn server inside a private network — an AWS VPC, a homelab — that clients join temporarily to reach private resources.",
   ],
   facts: [
@@ -59,8 +59,8 @@ export const ezvpn: Product = {
       body: "Generate a server key and an auth token, and you're done. Each client needs only the server's ID and that token as a shared secret — no certificates, no PKI.",
     },
     {
-      title: "Split or full tunnel",
-      body: "Route only the private prefixes you need — the typical case — or full-tunnel everything, with optional IPv4, IPv6, or dual-stack operation.",
+      title: "Dual stack",
+      body: "Run the tunnel over IPv4, IPv6, or both at once — clients receive an address in each family the server enables.",
     },
     {
       title: "End-to-end encrypted",
