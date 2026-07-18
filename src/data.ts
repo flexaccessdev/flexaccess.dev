@@ -30,7 +30,7 @@ export const ezvpn: Product = {
   metaDescription:
     "ezvpn is an open-source VPN that routes IP packets through an encrypted tunnel with NAT traversal built in — no open inbound port, no public IP, no subnet planning. CLI, Linux, macOS, Windows, and iOS clients.",
   cardSummary:
-    "Full IP routing to a private network — whole subnets, any protocol — with dynamic client addressing and zero port forwarding.",
+    "Full IP routing to a private network — whole subnets, any protocol — with dynamic client addressing and no inbound port to open or forward.",
   chips: ["IP layer", "root required"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
@@ -107,7 +107,7 @@ export const flextunnel: Product = {
   metaDescription:
     "flextunnel is an open-source SOCKS5/HTTP proxy split tunnel: reach TCP services behind a server with server-side DNS, no root on either end, no open inbound port — and it runs alongside another VPN, including on iOS. CLI, Linux, macOS, Windows, and iOS clients.",
   cardSummary:
-    "Proxy-level access to TCP services behind a server — server-side DNS, userspace sockets, and no admin rights needed on either end.",
+    "Reach TCP services behind a server over a local SOCKS5 / HTTP proxy or forwarded ports — with server-side DNS, reverse-routing agents for networks the server can't reach directly, and no admin rights on either end.",
   chips: ["proxy layer", "no root"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
@@ -139,6 +139,10 @@ export const flextunnel: Product = {
     {
       title: "Split by default",
       body: "Only targets on the server-pushed tunnel list go through the tunnel; everything else connects directly.",
+    },
+    {
+      title: "Local port forwarding",
+      body: "Bind a local port to any host:port on the server's network, so tools that can't use a proxy reach private services as if they were local.",
     },
     {
       title: "No inbound ports",
