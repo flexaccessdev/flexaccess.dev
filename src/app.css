@@ -195,11 +195,27 @@
 }
 
 .hero-availability {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.hero-availability-label {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
   color: var(--ink-soft);
-  max-width: 36rem;
-  margin-top: 16px;
+}
+
+.hero-platform-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .hero-actions {
