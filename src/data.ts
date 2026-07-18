@@ -35,7 +35,7 @@ export const ezvpn: Product = {
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
     "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
-    "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand. A typical deployment is a small ezvpn server inside a private network — an AWS VPC, a homelab — that clients join temporarily to reach private resources.",
+    "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand, as long as the number of connected devices fits the subnet's address space. A typical deployment is a small ezvpn server inside a private network — an AWS VPC, a homelab — that clients join temporarily to reach private resources.",
   ],
   facts: [
     { label: "Access level", value: "IP routing — whole subnets, any protocol" },
@@ -60,15 +60,11 @@ export const ezvpn: Product = {
     },
     {
       title: "Split or full tunnel",
-      body: "Route explicit private prefixes, or everything — with optional IPv4, IPv6, or dual-stack operation.",
+      body: "Route only the private prefixes you need — the typical case — or full-tunnel everything, with optional IPv4, IPv6, or dual-stack operation.",
     },
     {
       title: "End-to-end encrypted",
       body: "Traffic rides QUIC with TLS 1.3 from client to server. Relays that carry it can't decrypt it.",
-    },
-    {
-      title: "Token-based auth",
-      body: "Per-client tokens layered on cryptographic endpoint identity decide exactly who can connect.",
     },
     {
       title: "Auto-reconnect",
