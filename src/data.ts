@@ -73,7 +73,7 @@ export const ezvpn: Product = {
     {
       platform: "client and server CLI",
       name: "ezvpn",
-      description: "The core — command-line client and server.",
+      description: "The core — command-line client and server for Linux / macOS / Windows.",
       repo: `${GITHUB_ORG_URL}/ezvpn`,
     },
     {
@@ -154,7 +154,7 @@ export const flextunnel: Product = {
     {
       platform: "client and server CLI",
       name: "flextunnel",
-      description: "The core — command-line client and server.",
+      description: "The core — command-line client and server for Linux / macOS / Windows.",
       repo: `${GITHUB_ORG_URL}/flextunnel`,
     },
     {
