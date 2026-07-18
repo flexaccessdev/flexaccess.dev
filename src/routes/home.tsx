@@ -90,6 +90,10 @@ export default function Home() {
               built in, everything end-to-end encrypted. The server needs no
               public IP, no inbound port, no port forwarding.
             </p>
+            <p className="hero-availability">
+              Both ezvpn and flextunnel ship a CLI for Linux, macOS, and
+              Windows, native desktop GUIs, and an iOS app.
+            </p>
             <div className="hero-actions">
               <a href="#tools" className="button">
                 See the tools
