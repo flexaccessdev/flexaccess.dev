@@ -14,6 +14,7 @@ export interface Product {
   metaDescription: string;
   cardSummary: string;
   chips: string[];
+  platforms: string[];
   summary: string[];
   facts: { label: string; value: string }[];
   diagram: string;
@@ -27,10 +28,11 @@ export const ezvpn: Product = {
   name: "ezvpn",
   tagline: "The easy-setup VPN for reaching private networks.",
   metaDescription:
-    "ezvpn is an open-source VPN that routes IP packets through an encrypted tunnel with NAT traversal built in — no open inbound port, no public IP, no subnet planning. CLI, iOS, macOS, and Windows clients.",
+    "ezvpn is an open-source VPN that routes IP packets through an encrypted tunnel with NAT traversal built in — no open inbound port, no public IP, no subnet planning. CLI, Linux, macOS, Windows, and iOS clients.",
   cardSummary:
     "Full IP routing to a private network — whole subnets, any protocol — with dynamic client addressing and zero port forwarding.",
-  chips: ["IP layer", "root required", "CLI · iOS · macOS · Windows"],
+  chips: ["IP layer", "root required"],
+  platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
     "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
     "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand. A typical deployment is a small ezvpn server inside a private network — an AWS VPC, a homelab — that clients join temporarily to reach private resources.",
@@ -103,10 +105,11 @@ export const flextunnel: Product = {
   name: "flextunnel",
   tagline: "The rootless split tunnel for private TCP services.",
   metaDescription:
-    "flextunnel is an open-source SOCKS5/HTTP proxy split tunnel: reach TCP services behind a server with server-side DNS, no root on either end, no open inbound port — and it runs alongside another VPN, including on iOS.",
+    "flextunnel is an open-source SOCKS5/HTTP proxy split tunnel: reach TCP services behind a server with server-side DNS, no root on either end, no open inbound port — and it runs alongside another VPN, including on iOS. CLI, Linux, macOS, Windows, and iOS clients.",
   cardSummary:
     "Proxy-level access to TCP services behind a server — server-side DNS, userspace sockets, and no admin rights needed on either end.",
-  chips: ["proxy layer", "no root", "CLI · iOS"],
+  chips: ["proxy layer", "no root"],
+  platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
     "flextunnel gives you proxy-level access to hosts behind a server — without a VPN. The client runs local SOCKS5 and HTTP proxy listeners; targets on the server-pushed tunnel list are carried over an encrypted QUIC connection to the server, which resolves DNS and makes the outbound TCP connection from its own network. Everything else connects directly from your device.",
     "Because it uses ordinary userspace sockets — no TUN device — neither the client nor the server needs root or admin rights. And because it isn't a VPN, it sidesteps iOS's one-active-VPN-at-a-time restriction and runs happily alongside one.",

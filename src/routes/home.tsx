@@ -139,6 +139,16 @@ export default function Home() {
                   ))}
                 </ul>
                 <p className="tool-summary">{product.cardSummary}</p>
+                <div className="tool-platforms">
+                  <span className="tool-platforms-label">Available on</span>
+                  <ul className="tool-platform-list">
+                    {product.platforms.map((platform) => (
+                      <li key={platform} className="tool-platform">
+                        {platform}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <div className="tool-links">
                   <a href={`/${product.slug}`} className="tool-more">
                     Learn more

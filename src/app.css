@@ -431,6 +431,39 @@
   flex: 1;
 }
 
+.tool-platforms {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tool-platforms-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.tool-platform-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tool-platform {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
 .tool-links {
   display: flex;
   align-items: center;
