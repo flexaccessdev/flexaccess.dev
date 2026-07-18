@@ -80,13 +80,14 @@ export const ezvpn: Product = {
       platform: "iOS / macOS",
       name: "ezvpn-apple",
       description:
-        "Universal native SwiftUI app with a packet-tunnel extension and multiple saved profiles.",
+        "The native GUI client for the ezvpn server — an iOS and macOS SwiftUI app with a packet-tunnel extension and multiple saved profiles.",
       repo: `${GITHUB_ORG_URL}/ezvpn-apple`,
     },
     {
       platform: "Windows",
       name: "ezvpn-windows",
-      description: "Native WinUI 3 desktop app driving the same core.",
+      description:
+        "The native GUI client for the ezvpn server — a WinUI 3 desktop app driving the same core.",
       repo: `${GITHUB_ORG_URL}/ezvpn-windows`,
     },
   ],
