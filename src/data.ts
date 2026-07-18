@@ -79,14 +79,14 @@ export const ezvpn: Product = {
       repo: `${GITHUB_ORG_URL}/ezvpn`,
     },
     {
-      platform: "iOS / macOS",
+      platform: "iOS / macOS GUI client",
       name: "ezvpn-apple",
       description:
         "The native GUI client for the ezvpn server — an iOS and macOS SwiftUI app with a packet-tunnel extension and multiple saved profiles.",
       repo: `${GITHUB_ORG_URL}/ezvpn-apple`,
     },
     {
-      platform: "Windows",
+      platform: "Windows GUI client",
       name: "ezvpn-windows",
       description:
         "The native GUI client for the ezvpn server — a WinUI 3 desktop app driving the same core.",
@@ -157,18 +157,19 @@ export const flextunnel: Product = {
     {
       platform: "client and server CLI",
       name: "flextunnel",
-      description: "The core — command-line client and server for Linux / macOS / Windows.",
+      description:
+        "The core — command-line client, server, and reverse-routing agent for Linux / macOS / Windows.",
       repo: `${GITHUB_ORG_URL}/flextunnel`,
     },
     {
-      platform: "macOS / Windows",
+      platform: "macOS / Windows GUI client",
       name: "flextunnel-desktop",
       description:
         "The native GUI client for the flextunnel server — an iced tray app for macOS and Windows driving the same core.",
       repo: `${GITHUB_ORG_URL}/flextunnel/tree/main/crates/flextunnel-desktop`,
     },
     {
-      platform: "iOS",
+      platform: "iOS client",
       name: "flextunnel-ios",
       description:
         "Browse private networks in a built-in browser, or forward local ports so other apps can reach them.",
