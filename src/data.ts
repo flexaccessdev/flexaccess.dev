@@ -107,7 +107,7 @@ export const flextunnel: Product = {
   metaDescription:
     "flextunnel is an open-source SOCKS5/HTTP proxy split tunnel: reach TCP services behind a server with server-side DNS, no root on either end, no open inbound port — and it runs alongside another VPN, including on iOS. CLI, Linux, macOS, Windows, and iOS clients.",
   cardSummary:
-    "Reach TCP services behind a server over a local SOCKS5 / HTTP proxy or forwarded ports — with server-side DNS, reverse-routing agents for networks the server can't reach directly, and no admin rights on either end.",
+    "Reach TCP services behind a server over a local SOCKS5 / HTTP proxy or forwarded ports — with server-side DNS, reverse-routing agents and server-to-server bridges for networks the server can't reach directly, and no admin rights on either end.",
   chips: ["proxy layer", "no root"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
@@ -129,6 +129,10 @@ export const flextunnel: Product = {
                            target host:port`,
   features: [
     {
+      title: "SOCKS5 & HTTP proxy",
+      body: "The client runs local SOCKS5 and HTTP proxy listeners on 127.0.0.1 — point any proxy-aware app at them and its connections to private targets ride the tunnel.",
+    },
+    {
       title: "Zero privileges",
       body: "Ordinary userspace sockets on both ends — no TUN device, so no root, no admin, no elevation prompts.",
     },
@@ -143,6 +147,10 @@ export const flextunnel: Product = {
     {
       title: "Local port forwarding",
       body: "Bind a local port to any host:port on the server's network, so tools that can't use a proxy reach private services as if they were local.",
+    },
+    {
+      title: "Server-to-server bridges",
+      body: "Chain servers together: one server forwards matching targets over a persistent, authenticated connection to another, which resolves and dials them from its own network — split-tunnel routing that reaches networks a single server can't. Single hop, so mutual bridges can't loop.",
     },
     {
       title: "No inbound ports",
