@@ -30,7 +30,7 @@ export const ezvpn: Product = {
   metaDescription:
     "ezvpn is an open-source VPN that routes IP packets through an encrypted tunnel with NAT traversal built in — no open inbound port, no public IP, no subnet planning. CLI, Linux, macOS, Windows, and iOS clients.",
   cardSummary:
-    "Full IP routing to a private network — whole subnets, any protocol — with dynamic client addressing and no inbound port to open or forward.",
+    "Full IP routing to a private network — whole subnets, any protocol — set up with just a server key and a shared auth token, dynamic client addressing, and no inbound port to open or forward.",
   chips: ["IP layer", "root required"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
@@ -53,6 +53,10 @@ export const ezvpn: Product = {
     {
       title: "No subnet planning",
       body: "Client VPN addresses are assigned dynamically by the server, so there are no static IPs to keep collision-free.",
+    },
+    {
+      title: "Minimal setup",
+      body: "Generate a server key and an auth token, and you're done. Each client needs only the server's ID and that token as a shared secret — no certificates, no PKI.",
     },
     {
       title: "Split or full tunnel",
