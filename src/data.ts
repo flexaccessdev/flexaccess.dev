@@ -161,6 +161,13 @@ export const flextunnel: Product = {
       repo: `${GITHUB_ORG_URL}/flextunnel`,
     },
     {
+      platform: "macOS / Windows",
+      name: "flextunnel-desktop",
+      description:
+        "The native GUI client for the flextunnel server — an iced tray app for macOS and Windows driving the same core.",
+      repo: `${GITHUB_ORG_URL}/flextunnel/tree/main/crates/flextunnel-desktop`,
+    },
+    {
       platform: "iOS",
       name: "flextunnel-ios",
       description:
