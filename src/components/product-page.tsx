@@ -1,6 +1,7 @@
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import type { Product } from "../data";
-import { GITHUB_ORG_URL } from "../data";
+import { GITHUB_ORG_URL, sharedKeys } from "../data";
+import { InstallBlock } from "./install-block";
 
 export function ProductPage({ product }: { product: Product }) {
   const repoUrl = `${GITHUB_ORG_URL}/${product.slug}`;
@@ -51,6 +52,18 @@ export function ProductPage({ product }: { product: Product }) {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="product-section" id="install">
+          <h2 className="section-title">Install</h2>
+          <InstallBlock commands={product.install} />
+          <p className="install-note">
+            {product.installNote}{" "}
+            <a href="/#keys">
+              Set up {sharedKeys.name}
+              <ArrowRight aria-hidden="true" />
+            </a>
+          </p>
         </section>
 
         <section className="product-section">

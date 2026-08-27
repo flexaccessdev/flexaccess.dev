@@ -26,8 +26,8 @@ The build runs `react-router build`, then two post-build steps:
 ## Editing content
 
 - `site.config.mjs` — site URL and the list of prerendered routes (drives prerendering, the sitemap, and canonical URLs). Any new route must be added here or it won't be emitted as static HTML.
-- `src/data.ts` — all product content (taglines, features, client apps, comparison table)
-- `src/routes/` — page components; `src/components/product-page.tsx` renders both product pages
+- `src/data.ts` — all product content (taglines, features, install commands, client apps, shared repos, comparison table)
+- `src/routes/` — page components; `src/components/product-page.tsx` renders both product pages, `src/components/install-block.tsx` renders install commands
 - `src/index.css` — design tokens; `src/app.css` — component styles
 
 ## Deployment

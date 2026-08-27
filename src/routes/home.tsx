@@ -10,29 +10,37 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Route } from "./+types/home";
-import { GITHUB_ORG_URL, comparison, products } from "../data";
+import {
+  GITHUB_ORG_URL,
+  allPlatforms,
+  comparison,
+  products,
+  sharedKeys,
+  sharedRepos,
+} from "../data";
 import { pageMeta } from "../seo";
+import { InstallBlock } from "../components/install-block";
 
 const sharedIdea: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: DoorClosed,
     title: "No inbound ports",
-    body: "The server needs no public IP, no open port, and no port forwarding — clients dial a stable cryptographic identity instead of an address.",
+    body: "The server needs no public IP, no open port, and no port forwarding — clients dial a stable iroh endpoint ID, which is itself an Ed25519 public key, instead of an address.",
   },
   {
     icon: Waypoints,
     title: "NAT traversal built in",
-    body: "Direct paths are hole-punched through NAT and CGNAT; an encrypted relay carries traffic whenever a direct path isn't available.",
+    body: "Direct paths are hole-punched through NAT and CGNAT; an encrypted relay carries traffic when a direct path can't be found, and a connection can start relayed and upgrade to direct mid-life. Bring your own relays and nothing touches public infrastructure.",
   },
   {
     icon: Lock,
     title: "End-to-end encrypted",
-    body: "Traffic is encrypted from client to server. Relays that forward it can't read it.",
+    body: "Traffic rides QUIC with TLS 1.3 from client to server. Relays that forward it see only ciphertext and connection metadata — never plaintext.",
   },
   {
     icon: KeyRound,
-    title: "Token-authenticated",
-    body: "Every client presents its own auth token — whoever runs the server decides exactly who gets access.",
+    title: "Key-authenticated",
+    body: "Every client signs in with its own Ed25519 key, listed ssh-style in the server's authorized-keys file — whoever runs the server decides exactly who gets access.",
   },
 ];
 
@@ -40,7 +48,7 @@ export const meta: Route.MetaFunction = () =>
   pageMeta({
     title: "flexaccess.dev — reach private networks without opening ports",
     description:
-      "Open-source tunneling and VPN utilities. Clients dial the server by a stable cryptographic identity — NAT traversal and relay fallback built in — so the server needs no public IP, no inbound port, and no port forwarding.",
+      "Open-source tunneling and VPN utilities for Linux, macOS, Windows, iOS, and Android. Clients dial the server by a stable cryptographic identity — NAT traversal and relay fallback built in — so the server needs no public IP, no inbound port, and no port forwarding.",
     path: "/",
   });
 
@@ -85,17 +93,18 @@ export default function Home() {
               Reach private networks without opening a single port.
             </h1>
             <p className="lede">
-              Tunneling and VPN utilities where the client dials the server by a
-              stable cryptographic identity — NAT traversal and relay fallback
-              built in, everything end-to-end encrypted. The server needs no
-              public IP, no inbound port, no port forwarding.
+              Tunneling and VPN utilities built on iroh, where the client dials
+              the server by a stable cryptographic identity — NAT traversal and
+              relay fallback built in, everything end-to-end encrypted, every
+              client admitted by its own Ed25519 key. The server needs no public
+              IP, no inbound port, no port forwarding.
             </p>
             <div className="hero-availability">
               <span className="hero-availability-label">
-                Both tools available on
+                Available on
               </span>
               <ul className="hero-platform-list">
-                {products[0].platforms.map((platform) => (
+                {allPlatforms.map((platform) => (
                   <li key={platform} className="tool-platform">
                     {platform}
                   </li>
@@ -177,6 +186,22 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="keys" id="keys">
+        <div className="container keys-inner">
+          <div className="keys-copy">
+            <p className="kicker">shared · {sharedKeys.name}</p>
+            <h2 className="section-title">{sharedKeys.tagline}</h2>
+            <p className="keys-body">{sharedKeys.body}</p>
+            <InstallBlock commands={sharedKeys.install} />
+            <a href={sharedKeys.repo} className="tool-repo keys-repo">
+              {sharedKeys.name} on GitHub
+              <ArrowUpRight aria-hidden="true" />
+            </a>
+          </div>
+          <pre className="diagram keys-example">{sharedKeys.example}</pre>
+        </div>
+      </section>
+
       <section className="compare" id="which-one">
         <div className="container">
           <h2 className="section-title">Which one do I want?</h2>
@@ -204,6 +229,30 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="shared-repos">
+        <div className="container">
+          <h2 className="section-title">Under the hood</h2>
+          <p className="shared-repos-lede">
+            Both tools share one transport foundation and one key format, kept
+            in their own repos so they never drift apart.
+          </p>
+          <ul className="client-list">
+            {sharedRepos.map((repo) => (
+              <li key={repo.name} className="client">
+                <span className="client-platform">shared</span>
+                <div className="client-body">
+                  <a href={repo.repo} className="client-name">
+                    {repo.name}
+                    <ArrowUpRight aria-hidden="true" />
+                  </a>
+                  <p>{repo.summary}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </div>

@@ -883,3 +883,128 @@
     display: none;
   }
 }
+
+/* ---------- install commands ---------- */
+
+.install-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.install {
+  min-width: 0;
+}
+
+.install-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+}
+
+.install-cmd {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.install-hint {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+
+.install-note {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  max-width: 44rem;
+  margin-top: 16px;
+}
+
+.install-note a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.install-note a:hover {
+  text-decoration: underline;
+}
+
+.install-note a svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- shared keys ---------- */
+
+.keys {
+  padding: 0 0 88px;
+}
+
+.keys-inner {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.keys-copy .section-title {
+  margin-bottom: 12px;
+}
+
+.keys-body {
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+}
+
+.keys-copy .install-grid {
+  grid-template-columns: 1fr;
+}
+
+.keys-repo {
+  display: inline-flex;
+  margin-top: 20px;
+}
+
+.keys-example {
+  margin-top: 4px;
+}
+
+/* ---------- shared repos ---------- */
+
+.shared-repos {
+  padding: 0 0 88px;
+}
+
+.shared-repos-lede {
+  color: var(--ink-soft);
+  max-width: 44rem;
+  margin: -8px 0 24px;
+}
+
+@media (max-width: 900px) {
+  .keys-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .install-grid {
+    grid-template-columns: 1fr;
+  }
+}
