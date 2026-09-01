@@ -1,1 +1,1 @@
-- ignore https://github.com/flexaccessdev/tunnel-rs on the website since it is currently not a promoted project
+- https://github.com/flexaccessdev/tunnel-rs is not a promoted project: on the website it is only mentioned as the UDP-forwarding alternative in the Notes section of the flextunnel page — do not feature it beyond that

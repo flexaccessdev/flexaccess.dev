@@ -93,6 +93,29 @@ export function ProductPage({ product }: { product: Product }) {
           </ul>
         </section>
 
+        {product.notes?.length ? (
+          <section className="product-section">
+            <h2 className="section-title">Notes</h2>
+            {product.notes.map((note) => (
+              <div key={note.title} className="product-note">
+                <h3>{note.title}</h3>
+                <p>
+                  {note.body}
+                  {note.link ? (
+                    <>
+                      {" "}
+                      <a href={note.link.href}>
+                        {note.link.label}
+                        <ArrowUpRight aria-hidden="true" />
+                      </a>
+                    </>
+                  ) : null}
+                </p>
+              </div>
+            ))}
+          </section>
+        ) : null}
+
         <div className="product-cta">
           <a href={repoUrl} className="button">
             View {product.name} on GitHub

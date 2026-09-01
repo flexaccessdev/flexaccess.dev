@@ -13,6 +13,12 @@ export interface InstallCommand {
   note?: string;
 }
 
+export interface ProductNote {
+  title: string;
+  body: string;
+  link?: { label: string; href: string };
+}
+
 export interface Product {
   slug: "ezvpn" | "flextunnel";
   name: string;
@@ -29,6 +35,7 @@ export interface Product {
   installNote: string;
   clients: ClientApp[];
   goodFor: string[];
+  notes?: ProductNote[];
 }
 
 export const ezvpn: Product = {
@@ -254,6 +261,13 @@ export const flextunnel: Product = {
     "Shared or locked-down machines where you can't get admin rights",
     "Running next to a corporate or personal VPN — including on iOS",
     "A five-minute throwaway tunnel to a box you're sitting at — with --quick",
+  ],
+  notes: [
+    {
+      title: "Need UDP forwarding?",
+      body: "flextunnel carries TCP only. If you need to forward UDP — WireGuard or OpenVPN over P2P, game servers, VoIP, or UDP services in Kubernetes that kubectl port-forward can't reach — use tunnel-rs: peer-to-peer TCP and UDP port forwarding for Linux, macOS, and Windows over the same encrypted QUIC transport, with the same no-open-port NAT traversal, the same flexaccess-keys Ed25519 authentication, and no root on either end. It's built for development and homelab use rather than production.",
+      link: { label: "tunnel-rs on GitHub", href: `${GITHUB_ORG_URL}/tunnel-rs` },
+    },
   ],
 };
 

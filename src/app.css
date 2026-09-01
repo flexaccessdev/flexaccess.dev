@@ -765,6 +765,43 @@
   font-family: var(--font-mono);
 }
 
+.product-note {
+  max-width: 44rem;
+}
+
+.product-note + .product-note {
+  margin-top: 20px;
+}
+
+.product-note h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.product-note p {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.product-note a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.product-note a:hover {
+  text-decoration: underline;
+}
+
+.product-note a svg {
+  width: 14px;
+  height: 14px;
+}
+
 .product-cta {
   display: flex;
   gap: 12px;
