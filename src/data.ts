@@ -4,6 +4,8 @@ export interface ClientApp {
   platform: string;
   name: string;
   description: string;
+  /** How you get it — signed download, unsigned installer, build from source. */
+  distribution?: string;
   repo: string;
 }
 
@@ -38,20 +40,26 @@ export interface Product {
   notes?: ProductNote[];
 }
 
+const preReleaseNote = (name: string): ProductNote => ({
+  title: "Pre-1.0: keep both ends on the same release",
+  body: `While ${name} is in the 0.0.x series there is no backward compatibility between versions. Upgrade clients and servers together, and refresh configs from the current examples when you do.`,
+});
+
 export const ezvpn: Product = {
   slug: "ezvpn",
   name: "ezvpn",
   tagline: "The easy-setup VPN for reaching private networks.",
   metaDescription:
-    "ezvpn is an open-source IP-over-QUIC VPN with NAT traversal built in — no open inbound port, no public IP, no subnet planning, and per-client Ed25519 key authentication. CLI for Linux, macOS, and Windows, plus native iOS, macOS, Android, and Windows apps.",
+    "ezvpn is an open-source IP-over-QUIC VPN with NAT traversal built in — no open inbound port, no public IP, no subnet planning, and per-client Ed25519 key authentication. CLI for Linux, macOS, and Windows, plus native macOS, iOS, and Windows apps.",
   cardSummary:
     "Full IP routing to a private network — whole subnets, any protocol — with dynamic client addressing, per-client Ed25519 keys instead of certificates or PKI, and no inbound port to open or forward.",
   chips: ["IP layer", "root required"],
-  platforms: ["CLI", "Linux", "macOS", "Windows", "iOS", "Android"],
+  platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
     "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. By default it runs as a split tunnel, carrying only the private prefixes you need, though the CLI can full-tunnel everything when you want it to. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
     "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand, as long as the number of connected devices fits the subnet's address space. A typical deployment is a small ezvpn server inside a private network — an AWS VPC, a homelab — that clients join temporarily to reach private resources.",
     "Access control is a per-client Ed25519 keypair in the shared flexaccess-keys format: each client generates its own key, and the server keeps the public keys in an ssh-style authorized-keys file. No certificates, no PKI, no shared secret to rotate.",
+    "It is deliberately a server-centered access tunnel rather than a mesh. Every client talks only to the server gateway — never to another client — which is exactly what lets client addresses stay dynamic and conflict-free. The server and the desktop client do one thing, tunneling; firewall, NAT, and DNS stay with the OS.",
   ],
   facts: [
     { label: "Access level", value: "IP routing — whole subnets, any protocol" },
@@ -59,6 +67,7 @@ export const ezvpn: Product = {
     { label: "Tunnel modes", value: "Split or full, dual-stack IPv4 + IPv6" },
     { label: "Authentication", value: "Per-client Ed25519 keys, authorized-keys style" },
     { label: "Server exposure", value: "No public IP, no open inbound port" },
+    { label: "Topology", value: "Client ↔ server only — no client-to-client, no site-to-site" },
   ],
   diagram: `your device ══ IP packets over encrypted QUIC ══▶ ezvpn server ──▶ private subnet
 (TUN iface)     NAT traversal · relay fallback       (no open port)    any protocol`,
@@ -80,20 +89,36 @@ export const ezvpn: Product = {
       body: "Run the tunnel over IPv4, IPv6, or both at once — clients receive an address in each family the server enables.",
     },
     {
-      title: "Split DNS on mobile",
-      body: "The iOS and Android apps can send DNS for chosen match domains through the tunnel, so private names resolve on the phone without capturing all of its DNS.",
+      title: "Client isolation by design",
+      body: "Clients reach the server's network, never each other: inter-client packets are dropped in userspace before they touch the TUN device. Nothing to firewall, no stale-IP bookkeeping.",
+    },
+    {
+      title: "Won't swallow your own LAN",
+      body: "A split-tunnel route that overlaps the network you're sitting on is refused at connect, and again if that network appears mid-session — on desktop and iOS alike — so the tunnel never cuts off the gateway that carries it.",
+    },
+    {
+      title: "The underlay stays off the tunnel",
+      body: "The server publishes its own transport addresses and the client pins host routes for any a routed prefix would capture, so even a full tunnel can't deadlock on itself. Running on top of another VPN? --exclude-direct-path keeps the tunnel off that overlay.",
+    },
+    {
+      title: "Split DNS on iOS",
+      body: "The iOS app can send DNS for chosen match domains through the tunnel, so private names resolve on the phone without capturing all of its DNS. On desktop and macOS, DNS stays with the OS.",
     },
     {
       title: "End-to-end encrypted",
       body: "Traffic rides QUIC with TLS 1.3 from client to server. Relays that carry it can't decrypt it.",
     },
     {
-      title: "Auto-reconnect",
-      body: "On the CLI, keep-alive and idle-timeout health checks re-establish the tunnel when the path drops. The mobile apps stop cleanly on a network change and reconnect on tap.",
+      title: "Waits out outages",
+      body: "Auto-reconnect with exponential backoff, from the very first attempt: a server that's down or not up yet is the ordinary case, not an exit. Status shows failed attempts, the last error, and when the next try is due.",
     },
     {
-      title: "Fast on Linux",
-      body: "Automatic TUN GSO offload on Linux, with software segmentation fallback for peers that don't support it.",
+      title: "Bring your own relays",
+      body: "Point both ends at two or more custom relays and public infrastructure is out of the picture. A server that loses its home relay re-homes on another in place — same identity, same sockets, nothing torn down.",
+    },
+    {
+      title: "No tuning knobs",
+      body: "MTU 1280, Cubic, fixed windows: WireGuard-style protocol constants on both ends. Linux gets automatic TUN GSO offload; the macOS data path was recently reworked for multiples of its previous throughput.",
     },
   ],
   install: [
@@ -104,7 +129,7 @@ export const ezvpn: Product = {
     {
       label: "Windows (elevated PowerShell)",
       command: "irm https://flexaccessdev.github.io/ezvpn/install.ps1 | iex",
-      note: "Windows also needs wintun.dll from wintun.net next to ezvpn.exe.",
+      note: "The CLI also needs wintun.dll from wintun.net next to ezvpn.exe. The Windows app bundles it.",
     },
   ],
   installNote:
@@ -114,27 +139,23 @@ export const ezvpn: Product = {
       platform: "client and server CLI",
       name: "ezvpn",
       description: "The core — command-line client and server for Linux / macOS / Windows.",
+      distribution: "one-line installer, or cargo build",
       repo: `${GITHUB_ORG_URL}/ezvpn`,
     },
     {
-      platform: "iOS / macOS GUI client",
+      platform: "macOS / iOS GUI client",
       name: "ezvpn-apple",
       description:
-        "Native SwiftUI client with a packet-tunnel extension: dual-stack split tunnel, split DNS on iOS, multiple saved profiles. macOS ships as a signed, notarized drag-to-Applications .dmg; iOS is built from source under your own team.",
+        "Native SwiftUI client with a packet-tunnel extension: dual-stack split tunnel, multiple saved profiles, keys generated in-app and kept in the Keychain, split DNS on iOS, menu-bar controls on macOS. The macOS build is a signed, notarized drag-to-Applications .dmg that needs no Apple developer account to run; iOS is built from source under your own team.",
+      distribution: "macOS: signed .dmg · iOS: build from source",
       repo: `${GITHUB_ORG_URL}/ezvpn-apple`,
-    },
-    {
-      platform: "Android GUI client",
-      name: "ezvpn-android",
-      description:
-        "Native Kotlin / Jetpack Compose client running the Rust core inside a VpnService: dual-stack split tunnel, split DNS via an in-tunnel forwarder, always-on VPN support. Android 10+, arm64.",
-      repo: `${GITHUB_ORG_URL}/ezvpn-android`,
     },
     {
       platform: "Windows GUI client",
       name: "ezvpn-windows",
       description:
-        "Native WinUI 3 desktop app driving the ezvpn core through its C FFI: dual-stack split tunnel, multiple profiles, Ed25519 client keys kept in Windows Credential Manager. Unsigned MSI for personal use.",
+        "Native WinUI 3 app driving the ezvpn core through its C FFI: dual-stack split tunnel, multiple profiles, Ed25519 keys kept in Windows Credential Manager, live connection-path view. The MSI bundles wintun.dll; it is unsigned and scoped for personal use on x64.",
+      distribution: "unsigned .msi (x64)",
       repo: `${GITHUB_ORG_URL}/ezvpn-windows`,
     },
   ],
@@ -142,7 +163,14 @@ export const ezvpn: Product = {
     "Private cloud subnets — instances in private or egress-only VPC subnets",
     "Home-hosted servers behind dynamic IPs, NAT, or CGNAT",
     "Temporary split-tunnel access without standing VPN infrastructure",
-    "Reaching a homelab or VPC from a phone — iOS and Android apps included",
+    "Reaching a homelab or VPC from an iPhone or a Mac with the native app",
+  ],
+  notes: [
+    {
+      title: "Not a mesh, not site-to-site, not an anonymity tool",
+      body: "ezvpn gives clients the server's network and nothing else: no client-to-client traffic, and no bridging of two LANs. That trade is what makes addressing zero-config. If you want every device to have a stable IP so peers can address each other, that's Tailscale's job; for a permanent link between two subnets, use WireGuard. And because relays can see connection metadata when they're involved, ezvpn is not for anonymity — only the payload is guaranteed private.",
+    },
+    preReleaseNote("ezvpn"),
   ],
 };
 
@@ -151,22 +179,23 @@ export const flextunnel: Product = {
   name: "flextunnel",
   tagline: "The rootless split tunnel for private TCP services.",
   metaDescription:
-    "flextunnel is an open-source SOCKS5/HTTP proxy split tunnel over QUIC: reach TCP services behind a server with server-side DNS, per-client Ed25519 keys, no root on either end, no open inbound port — and it runs alongside another VPN, including on iOS. CLI, macOS and Windows tray app, and iOS client.",
+    "flextunnel is an open-source SOCKS5/HTTP proxy and port-forwarding split tunnel over QUIC: reach TCP services behind a server with server-side DNS, per-client Ed25519 keys, no root on either end, no open inbound port — and it runs alongside another VPN, including on iOS. CLI, macOS and Windows tray app, and iOS app.",
   cardSummary:
     "Reach TCP services behind a server over a local SOCKS5 / HTTP proxy or forwarded ports — with server-side DNS, host aliases, server-to-server bridges for networks the server can't reach directly, a zero-config --quick mode, and no admin rights on either end.",
   chips: ["proxy layer", "no root"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   summary: [
-    "flextunnel gives you proxy-level access to hosts behind a server — without a VPN. The client runs local SOCKS5 and HTTP proxy listeners; targets on the server-pushed tunnel list are carried over an encrypted QUIC connection to the server, which resolves DNS and makes the outbound TCP connection from its own network. Everything else connects directly from your device.",
+    "flextunnel gives you proxy-level access to hosts behind a server — without a VPN. The client runs local SOCKS5 and HTTP proxy listeners, and can bind local ports straight to server-side addresses; targets on the server-pushed tunnel list are carried over an encrypted QUIC connection to the server, which resolves DNS and makes the outbound TCP connection from its own network. Everything else connects directly from your device.",
     "Because it uses ordinary userspace sockets — no TUN device — neither the client nor the server needs root or admin rights. And because it isn't a VPN, it sidesteps iOS's one-active-VPN-at-a-time restriction and runs happily alongside one.",
     "Every connection is gated by a per-client Ed25519 keypair in the shared flexaccess-keys format; the server keeps an ssh-style authorized-keys file of the clients it admits. For a throwaway session, --quick skips key files and config entirely — each side just types in the other's endpoint ID.",
   ],
   facts: [
-    { label: "Access level", value: "TCP via local SOCKS5 / HTTP proxy listeners" },
+    { label: "Access level", value: "TCP via local SOCKS5 / HTTP proxy listeners or forwarded ports" },
     { label: "Privileges", value: "None — no root or admin on either end" },
     { label: "DNS", value: "Resolved on the server's side of the network" },
     { label: "Authentication", value: "Per-client Ed25519 keys, authorized-keys style" },
     { label: "Coexistence", value: "Runs alongside another VPN, including on iOS" },
+    { label: "Routing policy", value: "Set once on the server, pushed to every client" },
   ],
   diagram: `local app ──SOCKS5/HTTP──▶ flextunnel client   (127.0.0.1 · no root)
                                │  one encrypted QUIC connection
@@ -189,12 +218,12 @@ export const flextunnel: Product = {
       body: "Reach names that only resolve on the server's network — or the server's own localhost. The server can also map friendly names like server.internal to addresses on its network.",
     },
     {
-      title: "Split by default",
-      body: "Only targets on the server-pushed tunnel list go through the tunnel; everything else connects directly.",
+      title: "Split by default, enforced twice",
+      body: "Only targets on the server-pushed tunnel list go through the tunnel; everything else connects directly. The server enforces the same list as a whitelist on its side, so a misconfigured client can't reach past it.",
     },
     {
       title: "Local port forwarding",
-      body: "Bind a local port to any host:port on the server's network, so tools that can't use a proxy reach private services as if they were local. Manage forwards live from the client control panel.",
+      body: "Bind a local port to any host:port on the server's network, so tools that can't use a proxy — databases, RDP, most GUIs — reach private services as if they were local. Per profile in the desktop and iOS apps; from config on the CLI.",
     },
     {
       title: "Server-to-server bridges",
@@ -217,6 +246,18 @@ export const flextunnel: Product = {
       body: "Every client authenticates with its own Ed25519 keypair, signed into the handshake so a captured handshake can't be replayed; whoever runs the server decides which public keys get in.",
     },
     {
+      title: "Survives outages",
+      body: "Auto-reconnect with backoff from the very first attempt. Local listeners stay bound, off-list targets keep connecting directly, and on-list requests are held for up to 45 s while the link comes back instead of failing.",
+    },
+    {
+      title: "Bring your own relays",
+      body: "Point both ends at two or more custom relays and public infrastructure is out of the picture. A server that loses its home relay re-homes on another in place, so clients off the LAN aren't stranded.",
+    },
+    {
+      title: "Live control panel",
+      body: "flextunnel client control attaches a read-only terminal panel to a running client: connection phase, direct or relay path, the pushed routing breakdown, and every port forward's live state.",
+    },
+    {
       title: "Built-in status page",
       body: "From any connected client, http://flextunnel.internal shows the server's live status as a page or JSON — always tunneled, regardless of the routed set.",
     },
@@ -229,6 +270,7 @@ export const flextunnel: Product = {
     {
       label: "Windows (elevated PowerShell)",
       command: "irm https://flexaccessdev.github.io/flextunnel/install.ps1 | iex",
+      note: "Elevation is only for the installer, which writes to Program Files. Running flextunnel needs none.",
     },
   ],
   installNote:
@@ -238,21 +280,24 @@ export const flextunnel: Product = {
       platform: "client and server CLI",
       name: "flextunnel",
       description:
-        "The core — command-line client, server, and live control panel for Linux / macOS / Windows.",
+        "The core — command-line client, server, and read-only control panel for Linux / macOS / Windows.",
+      distribution: "one-line installer, container image, or cargo build",
       repo: `${GITHUB_ORG_URL}/flextunnel`,
     },
     {
       platform: "macOS / Windows GUI client",
       name: "flextunnel-desktop",
       description:
-        "A menu-bar / system-tray app for macOS and Windows: multiple concurrent profiles, per-profile SOCKS5 / HTTP listeners and port forwards, connection-path view. Shipped as a .dmg and .msi with every stable release.",
+        "A menu-bar / system-tray app for macOS and Windows: any number of profiles connected at once, each with its own SOCKS5 / HTTP listeners and port forwards; connection-path view, live per-profile logs, profile export and import, and secrets kept in the macOS Keychain or Windows Credential Manager.",
+      distribution: "unsigned .dmg / .msi with every stable release",
       repo: `${GITHUB_ORG_URL}/flextunnel/tree/main/crates/flextunnel-desktop`,
     },
     {
       platform: "iOS client",
       name: "flextunnel-ios",
       description:
-        "Browse private networks in a built-in split-tunnel browser, or forward local ports so other apps — SSH, RDP, databases — can reach them. No VPN profile required.",
+        "Browse private networks in a built-in split-tunnel browser, or forward localhost ports so other apps on the phone — SSH, RDP, databases — can reach them, with an opt-in background keep-alive. Saved profiles, keys generated on-device and kept in the Keychain, no VPN profile required. Each release publishes an unsigned .ipa to sign under your own Apple team.",
+      distribution: "unsigned .ipa, self-signed",
       repo: `${GITHUB_ORG_URL}/flextunnel-ios`,
     },
   ],
@@ -264,10 +309,15 @@ export const flextunnel: Product = {
   ],
   notes: [
     {
+      title: "Trusted clients, trusted host",
+      body: "flextunnel lets clients you trust reach a server you also run; it is not a multi-tenant service. An authorized client can reach whatever the server's network can — including the server's own localhost — so authorize keys accordingly and scope the server's network reach if that is too broad. The local proxy listeners are unauthenticated and bind 127.0.0.1 only, so the client host is assumed to be single-user.",
+    },
+    {
       title: "Need UDP forwarding?",
       body: "flextunnel carries TCP only. If you need to forward UDP — WireGuard or OpenVPN over P2P, game servers, VoIP, or UDP services in Kubernetes that kubectl port-forward can't reach — use tunnel-rs: peer-to-peer TCP and UDP port forwarding for Linux, macOS, and Windows over the same encrypted QUIC transport, with the same no-open-port NAT traversal, the same flexaccess-keys Ed25519 authentication, and no root on either end. It's built for development and homelab use rather than production.",
       link: { label: "tunnel-rs on GitHub", href: `${GITHUB_ORG_URL}/tunnel-rs` },
     },
+    preReleaseNote("flextunnel"),
   ],
 };
 
@@ -280,6 +330,7 @@ export const allPlatforms: string[] = Array.from(
 
 export interface SharedRepo {
   name: string;
+  kind: string;
   summary: string;
   repo: string;
 }
@@ -288,7 +339,7 @@ export const sharedKeys = {
   name: "flexaccess-keys",
   repo: `${GITHUB_ORG_URL}/flexaccess-keys`,
   tagline: "One key format for every FlexAccess tool.",
-  body: "Both tools authenticate clients with the same app-independent Ed25519 key format: a private key file you keep on the client, and one ed25519-pub: line per client in an ssh-style authorized-keys file on the server. flexaccess-keys is the small CLI that generates and inspects those keys — install it once and use it for ezvpn and flextunnel alike.",
+  body: "Both tools authenticate clients with the same app-independent Ed25519 key format: a private key file you keep on the client, and one ed25519-pub: line per client in an ssh-style authorized-keys file on the server. flexaccess-keys is the small CLI that generates and inspects those keys — install it once and use it for ezvpn and flextunnel alike. The GUI apps generate the same keys in-app, so a phone or a Mac needs no CLI at all.",
   install: [
     {
       label: "Linux / macOS",
@@ -311,15 +362,24 @@ ed25519-pub:<public key> build server`,
 
 export const sharedRepos: SharedRepo[] = [
   {
-    name: "flexaccess-keys",
+    name: "flexaccess-iroh",
+    kind: "transport crate",
     summary:
-      "The shared Ed25519 key format and CLI — generate-auth-key / show-auth-key — used by both tools.",
+      "The shared transport layer as code: relay configuration and the per-relay startup probe, the common endpoint builder, in-place home-relay failover for servers, and the endpoint-bound key authentication transcript. A fix lands here once and reaches every tool on its next tag bump.",
+    repo: `${GITHUB_ORG_URL}/flexaccess-iroh`,
+  },
+  {
+    name: "flexaccess-keys",
+    kind: "key format",
+    summary:
+      "The shared Ed25519 key format and CLI — generate-auth-key / show-auth-key — used by both tools and embedded in their GUI apps.",
     repo: `${GITHUB_ORG_URL}/flexaccess-keys`,
   },
   {
     name: "iroh-common-architecture",
+    kind: "design notes",
     summary:
-      "Design notes and operating guides for the shared transport layer: relays and address lookup, NAT traversal, and self-hosting your own relay.",
+      "Design notes and operating guides for the transport layer: relays and address lookup, relay failover, NAT traversal by NAT type, and self-hosting your own relay.",
     repo: `${GITHUB_ORG_URL}/iroh-common-architecture`,
   },
 ];
@@ -352,13 +412,23 @@ export const comparison: CompareRow[] = [
     flextunnel: "Per-client Ed25519 key (flexaccess-keys), or --quick with no keys at all",
   },
   {
+    label: "Desktop apps",
+    ezvpn: "macOS app as a signed .dmg, Windows app as an unsigned .msi — plus the CLI",
+    flextunnel: "macOS / Windows tray app as unsigned .dmg / .msi — plus the CLI",
+  },
+  {
     label: "Phones",
-    ezvpn: "iOS and Android apps",
-    flextunnel: "iOS app — browser and port forwards, no VPN profile",
+    ezvpn: "iOS app, built from source under your own team",
+    flextunnel: "iOS app — browser and port forwards, no VPN profile; unsigned .ipa you sign yourself",
   },
   {
     label: "Alongside another VPN",
     ezvpn: "iOS allows only one active VPN at a time",
     flextunnel: "Yes — it isn't a VPN",
+  },
+  {
+    label: "Not for",
+    ezvpn: "Client-to-client meshes, site-to-site links, anonymity",
+    flextunnel: "UDP, or apps that can't use a proxy or a forwarded port",
   },
 ];

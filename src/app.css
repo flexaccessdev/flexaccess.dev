@@ -746,6 +746,13 @@
   margin-top: 2px;
 }
 
+.client-body .client-dist {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  margin-top: 8px;
+}
+
 .good-for li {
   position: relative;
   padding-left: 22px;

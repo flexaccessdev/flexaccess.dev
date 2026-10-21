@@ -30,7 +30,7 @@ const sharedIdea: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: Waypoints,
     title: "NAT traversal built in",
-    body: "Direct paths are hole-punched through NAT and CGNAT; an encrypted relay carries traffic when a direct path can't be found, and a connection can start relayed and upgrade to direct mid-life. Bring your own relays and nothing touches public infrastructure.",
+    body: "Direct paths are hole-punched through NAT and CGNAT; an encrypted relay carries traffic when a direct path can't be found, and a connection can start relayed and upgrade to direct mid-life. Bring your own relays — two or more — and nothing touches public infrastructure; a server that loses one re-homes on another in place.",
   },
   {
     icon: Lock,
@@ -48,7 +48,7 @@ export const meta: Route.MetaFunction = () =>
   pageMeta({
     title: "flexaccess.dev — reach private networks without opening ports",
     description:
-      "Open-source tunneling and VPN utilities for Linux, macOS, Windows, iOS, and Android. Clients dial the server by a stable cryptographic identity — NAT traversal and relay fallback built in — so the server needs no public IP, no inbound port, and no port forwarding.",
+      "Open-source tunneling and VPN utilities for Linux, macOS, Windows, and iOS. Clients dial the server by a stable cryptographic identity — NAT traversal and relay fallback built in — so the server needs no public IP, no inbound port, and no port forwarding.",
     path: "/",
   });
 
@@ -237,12 +237,15 @@ export default function Home() {
           <h2 className="section-title">Under the hood</h2>
           <p className="shared-repos-lede">
             Both tools share one transport foundation and one key format, kept
-            in their own repos so they never drift apart.
+            in their own repos so they never drift apart. Since September 2026
+            the transport layer is code as well as documentation: a crate each
+            tool depends on by tag, with its own end-to-end suite against real
+            relays.
           </p>
           <ul className="client-list">
             {sharedRepos.map((repo) => (
               <li key={repo.name} className="client">
-                <span className="client-platform">shared</span>
+                <span className="client-platform">{repo.kind}</span>
                 <div className="client-body">
                   <a href={repo.repo} className="client-name">
                     {repo.name}

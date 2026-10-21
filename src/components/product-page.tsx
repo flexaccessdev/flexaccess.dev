@@ -78,6 +78,9 @@ export function ProductPage({ product }: { product: Product }) {
                     <ArrowUpRight aria-hidden="true" />
                   </a>
                   <p>{client.description}</p>
+                  {client.distribution ? (
+                    <p className="client-dist">{client.distribution}</p>
+                  ) : null}
                 </div>
               </li>
             ))}
