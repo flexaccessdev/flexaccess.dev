@@ -1,7 +1,7 @@
 import type { MetaDescriptor } from "react-router";
 import { SITE_URL } from "../site.config.mjs";
 
-const OG_IMAGE = `${SITE_URL}/flexaccess.svg`;
+export const OG_IMAGE = `${SITE_URL}/og.png`;
 
 export function pageMeta({
   title,
@@ -20,6 +20,9 @@ export function pageMeta({
     { property: "og:description", content: description },
     { property: "og:url", content: url },
     { property: "og:image", content: OG_IMAGE },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
     { name: "twitter:image", content: OG_IMAGE },

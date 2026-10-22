@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>flexaccess.dev — social preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; }
+      body {
+        font-family: "IBM Plex Sans", sans-serif;
+        background: #fbfaf8;
+        color: #1f2733;
+        position: relative;
+      }
+      .grid {
+        position: absolute; inset: 0;
+        background-image:
+          linear-gradient(#e7e3dc 1px, transparent 1px),
+          linear-gradient(90deg, #e7e3dc 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: .55;
+        mask-image: radial-gradient(ellipse at 30% 40%, #000 30%, transparent 75%);
+        -webkit-mask-image: radial-gradient(ellipse at 30% 40%, #000 30%, transparent 75%);
+      }
+      .card { position: absolute; inset: 0; padding: 72px 80px; display: flex; flex-direction: column; justify-content: space-between; }
+      .brand { display: flex; align-items: center; gap: 16px; }
+      .brand img { width: 48px; height: 48px; }
+      .brand span { font-size: 28px; font-weight: 600; letter-spacing: -0.01em; }
+      .kicker { font-family: "IBM Plex Mono", monospace; font-size: 18px; letter-spacing: .08em; color: #0a5c55; margin-bottom: 18px; }
+      h1 { font-size: 62px; font-weight: 700; line-height: 1.08; letter-spacing: -0.028em; max-width: 940px; }
+      .sub { margin-top: 22px; font-size: 24px; color: #5a6472; max-width: 760px; line-height: 1.45; }
+      .tools { display: flex; gap: 20px; }
+      .tool { display: flex; align-items: center; gap: 12px; padding: 12px 18px 12px 12px; background: #fff; border: 1px solid #e7e3dc; border-radius: 14px; font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 500; }
+      .tool img { width: 36px; height: 36px; border-radius: 9px; }
+      .tool small { font-family: "IBM Plex Sans", sans-serif; font-weight: 400; color: #5a6472; font-size: 17px; margin-left: 4px; }
+      .line { position: absolute; right: 80px; top: 300px; width: 300px; height: 3px;
+        background: repeating-linear-gradient(90deg, #0f766e 0 10px, transparent 10px 20px); }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <div class="card">
+      <div class="brand">
+        <img src="../../public/flexaccess.svg" alt="" />
+        <span>flexaccess.dev</span>
+      </div>
+      <div>
+        <div class="kicker">open source · tunneling &amp; vpn utilities</div>
+        <h1>Reach private networks without opening a single port.</h1>
+        <p class="sub">No public IP, no inbound port, no port forwarding. NAT traversal, relay fallback, and per-client Ed25519 keys built in.</p>
+      </div>
+      <div class="tools">
+        <div class="tool"><img src="../../public/ezvpn.svg" alt="" />ezvpn<small>IP-layer VPN</small></div>
+        <div class="tool"><img src="../../public/flextunnel.svg" alt="" />flextunnel<small>rootless TCP split tunnel</small></div>
+      </div>
+    </div>
+  </body>
+</html>

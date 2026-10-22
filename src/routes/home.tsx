@@ -3,9 +3,7 @@ import {
   ArrowUpRight,
   DoorClosed,
   KeyRound,
-  Laptop,
   Lock,
-  Server,
   Waypoints,
   type LucideIcon,
 } from "lucide-react";
@@ -20,17 +18,20 @@ import {
 } from "../data";
 import { pageMeta } from "../seo";
 import { InstallBlock } from "../components/install-block";
+import { CodeBlock } from "../components/code-block";
+import { SectionHeading } from "../components/section-heading";
+import { DialDiagram } from "../components/diagrams";
 
 const sharedIdea: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: DoorClosed,
     title: "No inbound ports",
-    body: "The server needs no public IP, no open port, and no port forwarding — clients dial a stable iroh endpoint ID, which is itself an Ed25519 public key, instead of an address.",
+    body: "The server needs no public IP, no open port, and no port forwarding. Clients dial a stable endpoint ID — itself an Ed25519 public key — instead of an address.",
   },
   {
     icon: Waypoints,
     title: "NAT traversal built in",
-    body: "Direct paths are hole-punched through NAT and CGNAT; an encrypted relay carries traffic when a direct path can't be found, and a connection can start relayed and upgrade to direct mid-life. Bring your own relays — two or more — and nothing touches public infrastructure; a server that loses one re-homes on another in place.",
+    body: "Direct paths are hole-punched through NAT and CGNAT. When none can be found, an encrypted relay carries the traffic, and a connection can upgrade from relayed to direct mid-life.",
   },
   {
     icon: Lock,
@@ -40,7 +41,7 @@ const sharedIdea: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: KeyRound,
     title: "Key-authenticated",
-    body: "Every client signs in with its own Ed25519 key, listed ssh-style in the server's authorized-keys file — whoever runs the server decides exactly who gets access.",
+    body: "Every client signs in with its own Ed25519 key, listed ssh-style in the server's authorized-keys file. Whoever runs the server decides exactly who gets in.",
   },
 ];
 
@@ -52,36 +53,6 @@ export const meta: Route.MetaFunction = () =>
     path: "/",
   });
 
-function TunnelDiagram() {
-  return (
-    <div className="tunnel-diagram" aria-hidden="true">
-      <div className="td-node">
-        <Laptop className="td-icon" />
-        <span className="td-name">your device</span>
-        <span className="td-sub">client</span>
-      </div>
-      <div className="td-link">
-        <span className="td-link-label">encrypted tunnel</span>
-        <div className="td-line" />
-        <span className="td-link-sub">outbound only</span>
-      </div>
-      <div className="td-wall">
-        <span className="td-wall-seg" />
-        <span className="td-wall-seg" />
-        <span className="td-wall-label">NAT / firewall</span>
-      </div>
-      <div className="td-link td-link-short">
-        <div className="td-line" />
-      </div>
-      <div className="td-node">
-        <Server className="td-icon" />
-        <span className="td-name">private network</span>
-        <span className="td-sub">no public IP · no open port</span>
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
     <div className="home">
@@ -89,23 +60,18 @@ export default function Home() {
         <div className="container hero-inner">
           <div className="hero-copy">
             <p className="kicker">open source · flexaccessdev</p>
-            <h1>
-              Reach private networks without opening a single port.
-            </h1>
+            <h1>Reach private networks without opening a single port.</h1>
             <p className="lede">
-              Tunneling and VPN utilities built on iroh, where the client dials
-              the server by a stable cryptographic identity — NAT traversal and
-              relay fallback built in, everything end-to-end encrypted, every
-              client admitted by its own Ed25519 key. The server needs no public
-              IP, no inbound port, no port forwarding.
+              Tunneling and VPN utilities built on iroh. Clients dial the server by a
+              stable cryptographic identity, so it needs no public IP, no inbound
+              port, and no port forwarding — NAT traversal, relay fallback, and
+              per-client keys are built in.
             </p>
             <div className="hero-availability">
-              <span className="hero-availability-label">
-                Available on
-              </span>
-              <ul className="hero-platform-list">
+              <span className="hero-availability-label">Available on</span>
+              <ul className="chip-row">
                 {allPlatforms.map((platform) => (
-                  <li key={platform} className="tool-platform">
+                  <li key={platform} className="chip chip-quiet">
                     {platform}
                   </li>
                 ))}
@@ -122,11 +88,13 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <TunnelDiagram />
+          <div className="hero-visual">
+            <DialDiagram />
+          </div>
         </div>
       </section>
 
-      <section className="strip">
+      <section className="strip" aria-label="What every tool shares">
         <div className="container">
           <ul className="idea-grid">
             {sharedIdea.map((idea) => (
@@ -142,16 +110,21 @@ export default function Home() {
 
       <section className="tools" id="tools">
         <div className="container">
-          <h2 className="section-title">The tools</h2>
+          <SectionHeading
+            kicker="the tools"
+            title="Two tools, one transport"
+            lede="Same dial-by-identity connection, same keys, same relays. They differ in which layer they give you — and whether you need root to get it."
+          />
           <div className="tool-grid">
             {products.map((product) => (
               <article key={product.slug} className="tool-card">
-                <p className="kicker">flexaccess.dev/{product.slug}</p>
-                <h3 className="tool-title">
+                <div className="tool-head">
                   <img src={`/${product.slug}.svg`} alt="" className="tool-icon" />
-                  {product.name}
-                </h3>
-                <p className="tool-tagline">{product.tagline}</p>
+                  <div>
+                    <h3 className="tool-title">{product.name}</h3>
+                    <p className="tool-tagline">{product.tagline}</p>
+                  </div>
+                </div>
                 <ul className="chip-row">
                   {product.chips.map((chip) => (
                     <li key={chip} className="chip">
@@ -160,18 +133,16 @@ export default function Home() {
                   ))}
                 </ul>
                 <p className="tool-summary">{product.cardSummary}</p>
-                <div className="tool-platforms">
-                  <span className="tool-platforms-label">Available on</span>
-                  <ul className="tool-platform-list">
-                    {product.platforms.map((platform) => (
-                      <li key={platform} className="tool-platform">
-                        {platform}
-                      </li>
+                <div className="tool-pick">
+                  <span className="tool-pick-label">Pick it when</span>
+                  <ul className="tool-pick-list">
+                    {product.pickWhen.map((item) => (
+                      <li key={item}>{item}</li>
                     ))}
                   </ul>
                 </div>
                 <div className="tool-links">
-                  <a href={`/${product.slug}`} className="tool-more">
+                  <a href={`/${product.slug}`} className="button">
                     Learn more
                     <ArrowRight aria-hidden="true" />
                   </a>
@@ -186,45 +157,35 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="keys" id="keys">
-        <div className="container keys-inner">
-          <div className="keys-copy">
-            <p className="kicker">shared · {sharedKeys.name}</p>
-            <h2 className="section-title">{sharedKeys.tagline}</h2>
-            <p className="keys-body">{sharedKeys.body}</p>
-            <InstallBlock commands={sharedKeys.install} />
-            <a href={sharedKeys.repo} className="tool-repo keys-repo">
-              {sharedKeys.name} on GitHub
-              <ArrowUpRight aria-hidden="true" />
-            </a>
-          </div>
-          <pre className="diagram keys-example">{sharedKeys.example}</pre>
-        </div>
-      </section>
-
       <section className="compare" id="which-one">
         <div className="container">
-          <h2 className="section-title">Which one do I want?</h2>
+          <SectionHeading
+            kicker="which one"
+            title="Which one do I want?"
+            lede="Side by side, on the things that decide it."
+          />
           <div className="compare-scroll">
             <div className="compare-table" role="table">
               <div className="compare-row compare-head" role="row">
                 <span role="columnheader" />
-                <a href="/ezvpn" role="columnheader">
-                  <img src="/ezvpn.svg" alt="" className="compare-icon" />
-                  ezvpn
-                </a>
-                <a href="/flextunnel" role="columnheader">
-                  <img src="/flextunnel.svg" alt="" className="compare-icon" />
-                  flextunnel
-                </a>
+                {products.map((product) => (
+                  <a key={product.slug} href={`/${product.slug}`} role="columnheader">
+                    <img src={`/${product.slug}.svg`} alt="" className="compare-icon" />
+                    {product.name}
+                  </a>
+                ))}
               </div>
               {comparison.map((row) => (
                 <div key={row.label} className="compare-row" role="row">
                   <span className="compare-label" role="rowheader">
                     {row.label}
                   </span>
-                  <span role="cell">{row.ezvpn}</span>
-                  <span role="cell">{row.flextunnel}</span>
+                  <span role="cell" data-label="ezvpn">
+                    {row.ezvpn}
+                  </span>
+                  <span role="cell" data-label="flextunnel">
+                    {row.flextunnel}
+                  </span>
                 </div>
               ))}
             </div>
@@ -232,27 +193,42 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="keys" id="keys">
+        <div className="container keys-inner">
+          <div className="keys-copy">
+            <SectionHeading
+              kicker={`shared · ${sharedKeys.name}`}
+              title={sharedKeys.tagline}
+              lede={sharedKeys.body}
+            />
+            <InstallBlock commands={sharedKeys.install} />
+            <a href={sharedKeys.repo} className="tool-repo keys-repo">
+              {sharedKeys.name} on GitHub
+              <ArrowUpRight aria-hidden="true" />
+            </a>
+          </div>
+          <div className="keys-example">
+            <CodeBlock code={sharedKeys.example} title="generate · show · authorize" noCopy />
+          </div>
+        </div>
+      </section>
+
       <section className="shared-repos">
         <div className="container">
-          <h2 className="section-title">Under the hood</h2>
-          <p className="shared-repos-lede">
-            Both tools share one transport foundation and one key format, kept
-            in their own repos so they never drift apart. Since September 2026
-            the transport layer is code as well as documentation: a crate each
-            tool depends on by tag, with its own end-to-end suite against real
-            relays.
-          </p>
-          <ul className="client-list">
+          <SectionHeading
+            kicker="under the hood"
+            title="One foundation, kept in its own repos"
+            lede="Both tools share one transport crate and one key format, so they never drift apart. Point both ends at two or more relays you run yourself and nothing touches public infrastructure."
+          />
+          <ul className="repo-grid">
             {sharedRepos.map((repo) => (
-              <li key={repo.name} className="client">
-                <span className="client-platform">{repo.kind}</span>
-                <div className="client-body">
-                  <a href={repo.repo} className="client-name">
-                    {repo.name}
-                    <ArrowUpRight aria-hidden="true" />
-                  </a>
-                  <p>{repo.summary}</p>
-                </div>
+              <li key={repo.name} className="repo-card">
+                <span className="repo-kind">{repo.kind}</span>
+                <a href={repo.repo} className="client-name">
+                  {repo.name}
+                  <ArrowUpRight aria-hidden="true" />
+                </a>
+                <p>{repo.summary}</p>
               </li>
             ))}
           </ul>
