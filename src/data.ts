@@ -98,7 +98,8 @@ export const ezvpn: Product = {
   ],
   summary: [
     "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. It runs as a split tunnel, carrying only the private prefixes you ask for; a full tunnel is available on the CLI and the Windows app but is still experimental. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
-    "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand. A typical deployment is a small ezvpn server inside a private network — an AWS VPC, a homelab — that clients join temporarily to reach private resources.",
+    "The model is WireGuard's remote-access one, without the open port: one ezvpn server on one device at a site — a homelab, an AWS VPC — and remote clients that dial in to it. Nothing else at the site installs anything. Route the site's prefixes and every device there answers at the address it already has; route nothing and you reach the server host alone, at its VPN address. Tailscale starts from the other end: each device you want to reach joins the tailnet as a node of its own, with a subnet router as the add-on for devices that can't run it. In ezvpn the gateway is the whole model.",
+    "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand, and clients join temporarily to reach private resources rather than living on a permanent overlay.",
     "Access control is a per-client Ed25519 keypair in the shared flexaccess-keys format: each client generates its own key, and the server keeps the public keys in an ssh-style authorized-keys file. No certificates, no PKI, no shared secret to rotate.",
   ],
   facts: [
@@ -107,7 +108,7 @@ export const ezvpn: Product = {
     { label: "Tunnel modes", value: "Split tunnel; full tunnel on CLI and Windows (experimental)" },
     { label: "Authentication", value: "Per-client Ed25519 keys, authorized-keys style" },
     { label: "Server exposure", value: "No public IP, no open inbound port" },
-    { label: "Topology", value: "Client ↔ server only — no client-to-client, no site-to-site" },
+    { label: "Topology", value: "One server per site, clients dial in — no client-to-client, no site-to-site" },
   ],
   features: [
     {
@@ -142,8 +143,13 @@ export const ezvpn: Product = {
     },
     {
       group: "Addressing",
+      title: "The site keeps its own addresses",
+      body: "One server reaches a whole site: the devices behind it run no VPN software and get no VPN address, and clients use the LAN IPs those devices already have. 192.168.1.20 at home is still 192.168.1.20 from the road.",
+    },
+    {
+      group: "Addressing",
       title: "Forwarding rules can be permanent",
-      body: "Reaching hosts beyond the server itself is ordinary OS routing: enable IP forwarding and add a MASQUERADE rule once. The rules are inert while the tunnel is down, so there are no PostUp / PostDown hooks to script.",
+      body: "Reaching hosts beyond the server itself is ordinary OS routing: enable IP forwarding and add a MASQUERADE rule once — or, for IPv6, skip NAT and announce the VPN prefix to the LAN with radvd. The rules are inert while the tunnel is down, so there are no PostUp / PostDown hooks to script.",
     },
     {
       group: "Routing & DNS",
@@ -182,7 +188,7 @@ export const ezvpn: Product = {
     rows: 29,
     poster: "npt:1:30",
     title: "Watch a tunnel come up",
-    lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it through the tunnel, and disconnects.",
+    lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it at its VPN address through the tunnel, and disconnects. This is the simplest use: one machine reached by its VPN address, with no routes and no NAT.",
     label: "Terminal recording: setting up an ezvpn server and connecting a client",
     caption:
       "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The same steps are written out in the quick start below.",
@@ -219,7 +225,7 @@ secret_file = "./vpn-server.key"`,
       body: "It prints its endpoint ID on startup. No port to open, no IP to publish.",
       code: "sudo ezvpn server start -c vpn_server.toml",
       aside:
-        "To reach hosts beyond the server itself, enable net.ipv4.ip_forward and add a MASQUERADE rule for 10.0.0.0/24 on the server's outbound interface. The rules are harmless while the tunnel is down, so they can simply stay.",
+        "To reach the rest of the site at its own addresses, enable net.ipv4.ip_forward and add a MASQUERADE rule for 10.0.0.0/24 on the server's outbound interface. The rules are harmless while the tunnel is down, so they can simply stay. IPv6 can be routed without NAT; docs/Server-Site-Gateway.md in the repo has the radvd setup.",
     },
     {
       title: "Connect a client",
@@ -273,8 +279,9 @@ ping 10.0.0.1   # the server's VPN address`,
     },
   ],
   goodFor: [
+    "A whole home or office LAN from one gateway device — every device at its original IP, nothing installed on any of them",
+    "One machine behind a dynamic IP, NAT, or CGNAT, reached at the server's VPN address",
     "Private cloud subnets — instances in private or egress-only VPC subnets",
-    "Home-hosted servers behind dynamic IPs, NAT, or CGNAT",
     "Temporary split-tunnel access without standing VPN infrastructure",
     "Reaching a homelab or VPC from an iPhone or a Mac with the native app",
   ],
@@ -285,7 +292,7 @@ ping 10.0.0.1   # the server's VPN address`,
     },
     {
       title: "Not a mesh, not site-to-site, not an anonymity tool",
-      body: "ezvpn gives clients the server's network and nothing else: no client-to-client traffic, and no bridging of two LANs. If you want every device to have a stable IP so peers can address each other, that's Tailscale's job; for a permanent link between two subnets, use WireGuard. And because relays can see connection metadata when they're involved, ezvpn is not for anonymity — only the payload is guaranteed private.",
+      body: "ezvpn gives clients the server's network and nothing else: no client-to-client traffic, and no bridging of two LANs. If you want every device to run its own node and have a stable IP so peers can address each other, that's Tailscale's job — and its subnet routers cover the gateway arrangement too. ezvpn shares WireGuard's remote-access shape but not its site-to-site one: for a permanent link between two subnets, use WireGuard. And because relays can see connection metadata when they're involved, ezvpn is not for anonymity — only the payload is guaranteed private.",
     },
     preReleaseNote("ezvpn"),
   ],
