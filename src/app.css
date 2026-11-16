@@ -1439,3 +1439,79 @@
     display: none;
   }
 }
+
+/* ---------- terminal demo ---------- */
+
+.demo {
+  max-width: 940px;
+}
+
+.demo-frame {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: #12151a;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.demo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #8a93a0;
+}
+
+.demo-placeholder a {
+  color: #5eead4;
+}
+
+.demo-caption {
+  margin-top: 14px;
+  max-width: 44rem;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+}
+
+/* The frame supplies the border and the corners. */
+.demo-player .ap-wrapper,
+.demo-player .ap-player {
+  border-radius: 0;
+}
+
+/* The player snaps the cell width to whole pixels, so the terminal can come
+   out narrower than the frame: centre it instead of leaving the gap on one
+   side. */
+.demo-player .ap-term {
+  margin-inline: auto;
+}
+
+/* The site's dark palette, in both colour schemes: a terminal stays dark.
+   ANSI green is the brand teal, so prompts, INFO lines and the active tmux
+   pane border pick it up. The doubled class outranks the player's own
+   .ap-player defaults, whose stylesheet loads after this one. */
+.ap-player.asciinema-player-theme-flexaccess {
+  --term-color-foreground: #dde2e9;
+  --term-color-background: #12151a;
+  --term-color-0: #20252c;
+  --term-color-1: #f2777a;
+  --term-color-2: #2dd4bf;
+  --term-color-3: #e6c07b;
+  --term-color-4: #7aa2f7;
+  --term-color-5: #c4a7e7;
+  --term-color-6: #7dcfff;
+  --term-color-7: #c5ccd6;
+  --term-color-8: #5d6672;
+  --term-color-9: #ff9a9d;
+  --term-color-10: #5eead4;
+  --term-color-11: #f2d9a0;
+  --term-color-12: #a4c0ff;
+  --term-color-13: #d9c5f5;
+  --term-color-14: #a8e1ff;
+  --term-color-15: #f2f4f7;
+}
