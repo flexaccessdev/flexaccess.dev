@@ -98,7 +98,7 @@ export const ezvpn: Product = {
   ],
   summary: [
     "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. It runs as a split tunnel, carrying only the private prefixes you ask for; a full tunnel is available on the CLI and the Windows app but is still experimental. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
-    "The model is WireGuard's remote-access one, without the open port: one ezvpn server on one device at a site — a homelab, an AWS VPC — and remote clients that dial in to it. Nothing else at the site installs anything. Route the site's prefixes and every device there answers at the address it already has; route nothing and you reach the server host alone, at its VPN address. That is the opposite of Tailscale's model, where each device you want to reach joins the tailnet as a node of its own.",
+    "The model is WireGuard's remote-access one, without the open port: one ezvpn server on one device at a site — a homelab, an AWS VPC — and remote clients that dial in to it. Nothing else at the site installs anything. Route the site's prefixes and every device there answers at the address it already has; route nothing and you reach the server host alone, at its VPN address. Tailscale starts from the other end: each device you want to reach joins the tailnet as a node of its own, with a subnet router as the add-on for devices that can't run it. In ezvpn the gateway is the whole model.",
     "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand, and clients join temporarily to reach private resources rather than living on a permanent overlay.",
     "Access control is a per-client Ed25519 keypair in the shared flexaccess-keys format: each client generates its own key, and the server keeps the public keys in an ssh-style authorized-keys file. No certificates, no PKI, no shared secret to rotate.",
   ],
@@ -292,7 +292,7 @@ ping 10.0.0.1   # the server's VPN address`,
     },
     {
       title: "Not a mesh, not site-to-site, not an anonymity tool",
-      body: "ezvpn gives clients the server's network and nothing else: no client-to-client traffic, and no bridging of two LANs. If you want every device to run its own node and have a stable IP so peers can address each other, that's Tailscale's job. ezvpn shares WireGuard's remote-access shape but not its site-to-site one: for a permanent link between two subnets, use WireGuard. And because relays can see connection metadata when they're involved, ezvpn is not for anonymity — only the payload is guaranteed private.",
+      body: "ezvpn gives clients the server's network and nothing else: no client-to-client traffic, and no bridging of two LANs. If you want every device to run its own node and have a stable IP so peers can address each other, that's Tailscale's job — and its subnet routers cover the gateway arrangement too. ezvpn shares WireGuard's remote-access shape but not its site-to-site one: for a permanent link between two subnets, use WireGuard. And because relays can see connection metadata when they're involved, ezvpn is not for anonymity — only the payload is guaranteed private.",
     },
     preReleaseNote("ezvpn"),
   ],
