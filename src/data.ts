@@ -180,7 +180,7 @@ export const ezvpn: Product = {
     src: "/demos/ezvpn.cast",
     cols: 161,
     rows: 29,
-    poster: "npt:1:28",
+    poster: "npt:1:30",
     title: "Watch a tunnel come up",
     lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it through the tunnel, and disconnects.",
     label: "Terminal recording: setting up an ezvpn server and connecting a client",
