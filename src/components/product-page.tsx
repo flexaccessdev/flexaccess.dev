@@ -1,10 +1,11 @@
-import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Download, Play } from "lucide-react";
 import type { Feature, Product } from "../data";
 import { GITHUB_ORG_URL, sharedKeys } from "../data";
 import { InstallBlock } from "./install-block";
 import { QuickStart } from "./quick-start";
 import { SectionHeading } from "./section-heading";
 import { FlowDiagram } from "./diagrams";
+import { TerminalDemo } from "./terminal-demo";
 import { ezvpnFlow, flextunnelFlow } from "./flows";
 
 function groupFeatures(features: Feature[]) {
@@ -25,6 +26,11 @@ export function ProductPage({ product }: { product: Product }) {
     product.slug === "ezvpn"
       ? "Only the prefixes you route go through the tunnel; the rest of your traffic never touches it."
       : "Only targets on the server-pushed list go through the tunnel; everything else connects directly from your device.";
+  // Sections alternate between the plain and the tinted background, whichever
+  // of the optional ones are present.
+  let sectionCount = 0;
+  const sectionClass = () =>
+    sectionCount++ % 2 === 0 ? "product-section" : "product-section product-section-alt";
 
   return (
     <article className="product">
@@ -54,6 +60,12 @@ export function ProductPage({ product }: { product: Product }) {
                 Install
                 <Download aria-hidden="true" />
               </a>
+              {product.demo ? (
+                <a href="#demo" className="button button-ghost">
+                  Watch the demo
+                  <Play aria-hidden="true" />
+                </a>
+              ) : null}
               <a href={repoUrl} className="button button-ghost">
                 GitHub
                 <ArrowUpRight aria-hidden="true" />
@@ -72,7 +84,7 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </header>
 
-      <section className="product-section">
+      <section className={sectionClass()}>
         <div className="container">
           <SectionHeading kicker="how it works" title="One encrypted connection, dialled by identity" />
           <FlowDiagram
@@ -88,7 +100,16 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      <section className="product-section product-section-alt">
+      {product.demo ? (
+        <section className={sectionClass()} id="demo">
+          <div className="container">
+            <SectionHeading kicker="demo" title={product.demo.title} lede={product.demo.lede} />
+            <TerminalDemo demo={product.demo} />
+          </div>
+        </section>
+      ) : null}
+
+      <section className={sectionClass()}>
         <div className="container">
           <SectionHeading kicker="features" title={`What ${product.name} gives you`} />
           <div className="feature-groups">
@@ -109,7 +130,7 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      <section className="product-section" id="quick-start">
+      <section className={sectionClass()} id="quick-start">
         <div className="container">
           <SectionHeading
             kicker="quick start"
@@ -126,7 +147,7 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      <section className="product-section product-section-alt" id="install">
+      <section className={sectionClass()} id="install">
         <div className="container">
           <SectionHeading kicker="install" title="Get the CLI" />
           <InstallBlock commands={product.install} />
@@ -140,7 +161,7 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      <section className="product-section">
+      <section className={sectionClass()}>
         <div className="container">
           <SectionHeading kicker="apps & repos" title="Pick your platform" />
           <ul className="client-grid">
@@ -161,7 +182,7 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      <section className="product-section product-section-alt">
+      <section className={sectionClass()}>
         <div className="container fit-grid">
           <div>
             <SectionHeading kicker="good for" title="Where it fits" />
@@ -198,7 +219,7 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      <section className="product-section">
+      <section className={sectionClass()}>
         <div className="container product-cta">
           <a href={repoUrl} className="button">
             View {product.name} on GitHub

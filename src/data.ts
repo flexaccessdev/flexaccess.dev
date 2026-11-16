@@ -38,6 +38,22 @@ export interface QuickStartStep {
   aside?: string;
 }
 
+/** A terminal recording shown on the product page. */
+export interface ProductDemo {
+  /** The asciicast, served from public/. Re-record with scripts/demo/. */
+  src: string;
+  /** Terminal size of the recording, to reserve its space before it loads. */
+  cols: number;
+  rows: number;
+  /** Frame shown before playback, as an asciinema-player poster spec. */
+  poster: string;
+  title: string;
+  lede: string;
+  /** Accessible name of the player. */
+  label: string;
+  caption: string;
+}
+
 export interface Product {
   slug: "ezvpn" | "flextunnel";
   name: string;
@@ -51,6 +67,7 @@ export interface Product {
   summary: string[];
   facts: { label: string; value: string }[];
   features: Feature[];
+  demo?: ProductDemo;
   quickStart: QuickStartStep[];
   install: InstallCommand[];
   installNote: string;
@@ -159,6 +176,17 @@ export const ezvpn: Product = {
       body: "MTU 1280, Cubic, fixed windows: WireGuard-style protocol constants on both ends. Linux gets automatic TUN GSO offload; the macOS CLI data path was recently reworked for roughly 3× the upload and 2× the download throughput.",
     },
   ],
+  demo: {
+    src: "/demos/ezvpn.cast",
+    cols: 161,
+    rows: 29,
+    poster: "npt:1:30",
+    title: "Watch a tunnel come up",
+    lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it through the tunnel, and disconnects.",
+    label: "Terminal recording: setting up an ezvpn server and connecting a client",
+    caption:
+      "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The same steps are written out in the quick start below.",
+  },
   quickStart: [
     {
       title: "Generate keys",
