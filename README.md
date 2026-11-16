@@ -35,7 +35,7 @@ The build runs `react-router build`, then two post-build steps:
 
 ## The ezvpn demo recording
 
-The ezvpn page plays `public/demos/ezvpn.cast`, an [asciicast](https://docs.asciinema.org/manual/asciicast/v2/) of a real session on two Linux hosts: a tmux window with the server on top and the client below. It is played by a self-hosted [asciinema-player](https://docs.asciinema.org/manual/player/), loaded only when the demo scrolls into view (`src/components/terminal-demo.tsx`); its colours are the `flexaccess` theme in `src/app.css`.
+The ezvpn page plays `public/demos/ezvpn.cast`, an [asciicast](https://docs.asciinema.org/manual/asciicast/v2/) of a real session on two Linux hosts: a tmux window with the server on the left and the client on the right. It is played by a self-hosted [asciinema-player](https://docs.asciinema.org/manual/player/), loaded only when the demo scrolls into view (`src/components/terminal-demo.tsx`); its colours are the `flexaccess` theme in `src/app.css`.
 
 `scripts/demo/record-ezvpn.sh` re-records it — not part of the build; run it after an ezvpn release changes what the demo shows, then commit the `.cast`:
 

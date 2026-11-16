@@ -178,11 +178,11 @@ export const ezvpn: Product = {
   ],
   demo: {
     src: "/demos/ezvpn.cast",
-    cols: 100,
-    rows: 32,
-    poster: "npt:1:13",
+    cols: 161,
+    rows: 29,
+    poster: "npt:1:28",
     title: "Watch a tunnel come up",
-    lede: "Two Linux hosts, recorded as typed. The server, on top, gets an identity key and a four-setting config. The client, below, dials it by endpoint ID, pings it through the tunnel, and disconnects.",
+    lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it through the tunnel, and disconnects.",
     label: "Terminal recording: setting up an ezvpn server and connecting a client",
     caption:
       "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The same steps are written out in the quick start below.",

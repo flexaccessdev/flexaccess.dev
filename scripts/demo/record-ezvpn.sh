@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Records the split-screen ezvpn demo shown on /ezvpn: a tmux window with the
-# server host on top and the client host below, driven by scripted keystrokes
-# and captured with asciinema. Everything on screen is real output from the two
-# hosts; nothing is edited afterwards.
+# server host on the left and the client host on the right, driven by scripted
+# keystrokes and captured with asciinema. Everything on screen is real output
+# from the two hosts; nothing is edited afterwards.
 #
 #   DEMO_SERVER=debian@server-host DEMO_CLIENT=debian@client-host \
 #     scripts/demo/record-ezvpn.sh [--install] [output.cast]
@@ -47,11 +47,15 @@ REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 OUT="${OUT:-$REPO_DIR/public/demos/ezvpn.cast}"
 mkdir -p "$(dirname "$OUT")"
 
-COLS=100
-# One border line above each pane; the server pane only has to show its log.
-SERVER_ROWS=12
-CLIENT_ROWS=18
-ROWS=$((SERVER_ROWS + CLIENT_ROWS + 2))
+# Two panes side by side with a one-column divider between them, and one
+# border line (the pane titles) above.
+PANE_COLS=80
+PANE_ROWS=28
+COLS=$((PANE_COLS * 2 + 1))
+ROWS=$((PANE_ROWS + 1))
+# The panes are narrow, so the hosts' own prompt (user@host:dir) gives way to
+# a short one that leaves the commands room.
+DEMO_PS1='\[\e[32m\]\h\$\[\e[0m\] '
 SOCK="ezvpn-demo-$$"
 VPN_NET="10.0.0.0/24"
 VPN_SERVER_IP="10.0.0.1"
@@ -171,14 +175,17 @@ tm set -g pane-border-status top
 tm set -g pane-border-format ' #{pane_title} '
 tm set -g pane-border-style 'fg=brightblack'
 tm set -g pane-active-border-style 'fg=green'
-tm split-window -v -t demo "$(ssh_cmd "$DEMO_CLIENT")"
-tm resize-pane -t "$SERVER_PANE" -y "$SERVER_ROWS"
+tm split-window -h -t demo "$(ssh_cmd "$DEMO_CLIENT")"
+tm resize-pane -t "$SERVER_PANE" -x "$PANE_COLS"
 tm select-pane -t "$SERVER_PANE" -T "server · $SERVER_HOST"
 tm select-pane -t "$CLIENT_PANE" -T "client · $CLIENT_HOST"
-wait_prompt "$SERVER_PANE"
-wait_prompt "$CLIENT_PANE"
-clear_pane "$SERVER_PANE"
-clear_pane "$CLIENT_PANE"
+for pane in "$SERVER_PANE" "$CLIENT_PANE"; do
+  wait_prompt "$pane"
+  tm send-keys -t "$pane" -l -- " PS1='$DEMO_PS1'"
+  tm send-keys -t "$pane" Enter
+  wait_prompt "$pane"
+  clear_pane "$pane"
+done
 tm select-pane -t "$CLIENT_PANE"
 
 echo "recording to $OUT ..."
@@ -260,7 +267,7 @@ wait_prompt "$SERVER_PANE"
 pause 1.2
 clear_pane "$SERVER_PANE"
 run "$SERVER_PANE" "sudo ezvpn server start -c vpn_server.toml"
-wait_for "$SERVER_PANE" 'TUN reader started' 60
+wait_for "$SERVER_PANE" '\]   Node ID: [0-9a-f]{64}' 60
 pause 3
 
 # 3. Client: connect by EndpointId, look around, disconnect.

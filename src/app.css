@@ -1442,10 +1442,6 @@
 
 /* ---------- terminal demo ---------- */
 
-.demo {
-  max-width: 940px;
-}
-
 .demo-frame {
   position: relative;
   border: 1px solid var(--line-strong);
