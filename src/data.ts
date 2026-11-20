@@ -557,11 +557,11 @@ export const sharedRepos: SharedRepo[] = [
     repo: `${GITHUB_ORG_URL}/flexaccess-keys`,
   },
   {
-    name: "iroh-common-architecture",
+    name: "flexaccess-iroh/docs",
     kind: "design notes",
     summary:
-      "Design notes and operating guides for the transport layer: relays and address lookup, relay failover, NAT traversal by NAT type, and self-hosting your own relay.",
-    repo: `${GITHUB_ORG_URL}/iroh-common-architecture`,
+      "Design notes and operating guides for the transport layer, kept next to the crate that implements it: relays and address lookup, relay failover, NAT traversal by NAT type, and self-hosting your own relay.",
+    repo: `${GITHUB_ORG_URL}/flexaccess-iroh/tree/main/docs`,
   },
 ];
 
