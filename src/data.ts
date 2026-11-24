@@ -40,6 +40,8 @@ export interface QuickStartStep {
 
 /** A terminal recording shown on the product page. */
 export interface ProductDemo {
+  /** Anchor of the demo's section; the hero links to the first demo's. */
+  id: string;
   /** The asciicast, served from public/. Re-record with scripts/demo/. */
   src: string;
   /** Terminal size of the recording, to reserve its space before it loads. */
@@ -67,7 +69,8 @@ export interface Product {
   summary: string[];
   facts: { label: string; value: string }[];
   features: Feature[];
-  demo?: ProductDemo;
+  /** Terminal recordings, each in its own section, the primary one first. */
+  demos: ProductDemo[];
   quickStart: QuickStartStep[];
   install: InstallCommand[];
   installNote: string;
@@ -177,17 +180,20 @@ export const ezvpn: Product = {
       body: "The tunnel MTU is 1280. QUIC uses Cubic by default with fixed send and receive windows, and Linux uses TUN GSO where available. The CLI offers congestion-control and initial-window overrides for testing.",
     },
   ],
-  demo: {
-    src: "/demos/ezvpn.cast",
-    cols: 161,
-    rows: 29,
-    poster: "npt:1:30",
-    title: "Watch a tunnel come up",
-    lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it at its VPN address through the tunnel, and disconnects. This is the simplest use: one machine reached by its VPN address, with no routes and no NAT.",
-    label: "Terminal recording: setting up an ezvpn server and connecting a client",
-    caption:
-      "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The same steps are written out in the quick start below.",
-  },
+  demos: [
+    {
+      id: "demo",
+      src: "/demos/ezvpn.cast",
+      cols: 161,
+      rows: 29,
+      poster: "npt:1:30",
+      title: "Watch a tunnel come up",
+      lede: "Two Linux hosts, recorded as typed. The server, on the left, gets an identity key and a four-setting config. The client, on the right, dials it by endpoint ID, pings it at its VPN address through the tunnel, and disconnects. This is the simplest use: one machine reached by its VPN address, with no routes and no NAT.",
+      label: "Terminal recording: setting up an ezvpn server and connecting a client",
+      caption:
+        "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The same steps are written out in the quick start below.",
+    },
+  ],
   quickStart: [
     {
       title: "Generate keys",
@@ -393,17 +399,32 @@ export const flextunnel: Product = {
       body: "Through a local proxy, http://flextunnel.internal/ shows client status without dialing a server. Open /servers/<name>/ for that destination's server status. Both views also offer status.txt and status.json.",
     },
   ],
-  demo: {
-    src: "/demos/flextunnel.cast",
-    cols: 161,
-    rows: 39,
-    poster: "npt:1:11",
-    title: "Watch a quick tunnel come up",
-    lede: "Two Linux hosts install flextunnel and run --quick as ordinary users. On the right, the client prints its endpoint ID. On the left, the server authorizes exactly that ID and prints its own. The client dials it and opens a SOCKS5 port. A second client shell fetches a page served only on the server's loopback, and the panel shows the path went direct. Quitting the panel disconnects without saving keys or configuration.",
-    label: "Terminal recording: a flextunnel quick-mode session between a server and a client",
-    caption:
-      "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The keyed setup for a lasting server is written out in the quick start below.",
-  },
+  demos: [
+    {
+      id: "demo",
+      src: "/demos/flextunnel.cast",
+      cols: 161,
+      rows: 39,
+      poster: "npt:1:42",
+      title: "Watch a tunnel come up",
+      lede: "Two Linux hosts install flextunnel as ordinary users. On the right, the client makes an Ed25519 key pair with flexaccess-keys. On the left, the server gets an identity key, the client's public key, and a two-line config. The client names the server as a destination by its endpoint ID and opens a SOCKS5 port. A second client shell fetches a page served only on the server's loopback, and that first request is what connects the destination.",
+      label: "Terminal recording: setting up a flextunnel server and connecting a client",
+      caption:
+        "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The same steps are written out in the quick start below.",
+    },
+    {
+      id: "demo-quick",
+      src: "/demos/flextunnel-quick.cast",
+      cols: 161,
+      rows: 39,
+      poster: "npt:1:11",
+      title: "Or a throwaway tunnel with --quick",
+      lede: "Two Linux hosts install flextunnel and run --quick as ordinary users. On the right, the client prints its endpoint ID. On the left, the server authorizes exactly that ID and prints its own. The client dials it and opens a SOCKS5 port. A second client shell fetches a page served only on the server's loopback, and the panel shows the path went direct. Quitting the panel disconnects without saving keys or configuration.",
+      label: "Terminal recording: a flextunnel quick-mode session between a server and a client",
+      caption:
+        "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback.",
+    },
+  ],
   quickStart: [
     {
       title: "Generate keys",
