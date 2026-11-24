@@ -31,7 +31,7 @@
 .header-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 24px;
   height: 60px;
 }
 
@@ -55,8 +55,13 @@
 
 .site-nav {
   display: flex;
+  flex: 1;
   align-items: center;
   gap: 4px;
+}
+
+.nav-github {
+  margin-left: auto;
 }
 
 .nav-link {
@@ -85,6 +90,13 @@
   flex-shrink: 0;
 }
 
+.nav-external-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: -2px;
+  flex-shrink: 0;
+}
+
 .nav-link:hover {
   color: var(--ink);
   background: var(--accent-tint);
@@ -92,7 +104,9 @@
 
 .nav-link.active {
   color: var(--accent-ink);
-  background: var(--accent-tint);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 /* ---------- footer ---------- */
@@ -1396,7 +1410,8 @@
     padding: 6px;
   }
 
-  .nav-github-label {
+  .nav-github-label,
+  .nav-external-icon {
     display: none;
   }
 
