@@ -110,7 +110,10 @@ reset_hosts() {
   local server_extra=":" client_extra=":"
   if [ "$INSTALL" = 1 ]; then
     server_extra='rm -f ~/.local/bin/flextunnel'
-    client_extra='rm -f ~/.local/bin/flextunnel ~/.local/bin/flexaccess-keys'
+    client_extra='rm -f ~/.local/bin/flextunnel'
+    if [ "$QUICK" = 0 ]; then
+      client_extra+=' ~/.local/bin/flexaccess-keys'
+    fi
   fi
   # A keyed server takes a lock file named after its endpoint id.
   [ -n "$SERVER_ID" ] && server_extra+="; rm -f ~/.config/flextunnel/server-${SERVER_ID:0:16}.lock"
@@ -251,6 +254,7 @@ fetch_page() {
 }
 
 keyed_demo() {
+  local destination="office"
   # 1. Client: key pair.
   focus "$CLIENT_PANE"
   run "$CLIENT_PANE" "# client: make a key pair; the public half goes to the server"
@@ -307,7 +311,7 @@ keyed_demo() {
     "socks_port = $SOCKS_PORT" \
     'auth_key_file = "./client.key"' \
     '[[destinations]]' \
-    "name = \"$SERVER_HOST\""; do
+    "name = \"$destination\""; do
     pause 0.2
     run "$CLIENT_PANE" "$line"
   done
@@ -325,8 +329,8 @@ keyed_demo() {
   pause 3
 
   # 4. Client, second shell: the first request connects the destination.
-  fetch_page "$SERVER_HOST"
-  wait_for "$CLIENT_PANE" "$SERVER_HOST: authenticated" 30
+  fetch_page "$destination"
+  wait_for "$CLIENT_PANE" "$destination: authenticated" 30
   wait_for "$SERVER_PANE" 'authenticated' 30
   pause 2
 

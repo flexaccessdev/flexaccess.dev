@@ -35,7 +35,7 @@ The build runs `react-router build`, then two post-build steps:
 
 ## The demo recordings
 
-Each product page plays recordings from `public/demos/`, each an [asciicast](https://docs.asciinema.org/manual/asciicast/v2/) of a real session on two Linux hosts in a tmux window, server on the left and client on the right:
+The product pages play [asciicast recordings](https://docs.asciinema.org/manual/asciicast/v2/) from `public/demos/`. Each shows a real session on two Linux hosts in a tmux window with the server on the left and the client on the right.
 
 - `ezvpn.cast` — key generation, a four-setting server config, a client connecting by endpoint ID, a ping through the tunnel, and a disconnect
 - `flextunnel.cast` — the same keyed setup as ezvpn's: a flexaccess-keys key pair on the client, a two-line server config, the server as a destination in the client's config, and a second shell on the client fetching a page served only on the server's loopback through the SOCKS5 port
@@ -43,7 +43,9 @@ Each product page plays recordings from `public/demos/`, each an [asciicast](htt
 
 They are played by a self-hosted [asciinema-player](https://docs.asciinema.org/manual/player/), loaded only when the demo scrolls into view (`src/components/terminal-demo.tsx`); its colours are the `flexaccess` theme in `src/app.css`.
 
-`scripts/demo/record-ezvpn.sh` and `scripts/demo/record-flextunnel.sh` re-record them — not part of the build; run one after a release changes what its demo shows, then commit the `.cast`:
+`scripts/demo/record-ezvpn.sh` and `scripts/demo/record-flextunnel.sh` re-record the demos. Use dedicated SSH accounts. The flextunnel recorder stops existing flextunnel processes and clears `~/demo` on both hosts. With `--install`, it also removes existing copies of the demo binaries from `~/.local/bin` before recording and removes the newly installed copies afterward.
+
+Run the relevant command after a release changes what a demo shows, then commit the `.cast`:
 
 ```sh
 DEMO_SERVER=debian@server-host DEMO_CLIENT=debian@client-host \
