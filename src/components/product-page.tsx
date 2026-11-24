@@ -60,8 +60,8 @@ export function ProductPage({ product }: { product: Product }) {
                 Install
                 <Download aria-hidden="true" />
               </a>
-              {product.demo ? (
-                <a href="#demo" className="button button-ghost">
+              {product.demos.length > 0 ? (
+                <a href={`#${product.demos[0].id}`} className="button button-ghost">
                   Watch the demo
                   <Play aria-hidden="true" />
                 </a>
@@ -100,14 +100,14 @@ export function ProductPage({ product }: { product: Product }) {
         </div>
       </section>
 
-      {product.demo ? (
-        <section className={sectionClass()} id="demo">
+      {product.demos.map((demo) => (
+        <section key={demo.id} className={sectionClass()} id={demo.id}>
           <div className="container">
-            <SectionHeading kicker="demo" title={product.demo.title} lede={product.demo.lede} />
-            <TerminalDemo demo={product.demo} />
+            <SectionHeading kicker="demo" title={demo.title} lede={demo.lede} />
+            <TerminalDemo demo={demo} />
           </div>
         </section>
-      ) : null}
+      ))}
 
       <section className={sectionClass()}>
         <div className="container">
