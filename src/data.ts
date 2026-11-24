@@ -76,35 +76,30 @@ export interface Product {
   notes?: ProductNote[];
 }
 
-const preReleaseNote = (name: string): ProductNote => ({
-  title: "Pre-1.0: keep both ends on the same release",
-  body: `While ${name} is in the 0.0.x series there is no backward compatibility between versions. Upgrade clients and servers together, and refresh configs from the current examples when you do. If an upgraded deployment still can't connect, regenerate the server identity key as a fallback — that changes the server's endpoint ID, so update every client profile with the new one.`,
-});
-
 export const ezvpn: Product = {
   slug: "ezvpn",
   name: "ezvpn",
   tagline: "The easy-setup VPN for reaching private networks.",
   metaDescription:
-    "ezvpn is an open-source IP-over-QUIC VPN with NAT traversal built in — no open inbound port, no public IP, no subnet planning, and per-client Ed25519 key authentication. CLI for Linux, macOS, and Windows, plus native macOS, iOS, and Windows apps.",
+    "ezvpn is an open-source IP-over-QUIC VPN with NAT traversal, dynamic client addressing, and per-client Ed25519 authentication. The server needs no public IP or inbound port. CLI for Linux, macOS, and Windows, plus native macOS, iOS, and Windows apps.",
   cardSummary:
     "Full IP routing to a private network — whole subnets, any protocol — with dynamic client addressing, per-client Ed25519 keys instead of certificates or PKI, and no inbound port to open or forward.",
   chips: ["IP layer", "needs root"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   pickWhen: [
     "You want a whole subnet reachable — any protocol, transparently, through the routing table",
-    "You can run as root / Administrator on the client",
+    "You can run the CLI as root / Administrator",
     "You'd rather have a native VPN app on your Mac, iPhone, or Windows PC",
   ],
   summary: [
     "ezvpn creates a virtual network interface and routes IP packets — IPv4, IPv6, or both — through an encrypted QUIC connection. It runs as a split tunnel, carrying only the private prefixes you ask for; a full tunnel is available on the CLI and the Windows app but is still experimental. Clients dial the server by its stable endpoint identity, so the server needs no public IP and no open inbound port: hole punching finds a direct path through NAT, and an encrypted relay carries traffic when it can't.",
     "The model is WireGuard's remote-access one, without the open port: one ezvpn server on one device at a site — a homelab, an AWS VPC — and remote clients that dial in to it. Nothing else at the site installs anything. Route the site's prefixes and every device there answers at the address it already has; route nothing and you reach the server host alone, at its VPN address. Tailscale starts from the other end: each device you want to reach joins the tailnet as a node of its own, with a subnet router as the add-on for devices that can't run it. In ezvpn the gateway is the whole model.",
-    "There is no VPN subnet to plan, either. The server assigns client addresses dynamically, so nothing has to be kept collision-free by hand, and clients join temporarily to reach private resources rather than living on a permanent overlay.",
+    "Choose a VPN prefix on the server and it assigns client addresses dynamically by default. Clients join to reach private resources without managing a static address for each device.",
     "Access control is a per-client Ed25519 keypair in the shared flexaccess-keys format: each client generates its own key, and the server keeps the public keys in an ssh-style authorized-keys file. No certificates, no PKI, no shared secret to rotate.",
   ],
   facts: [
     { label: "Access level", value: "IP routing — whole subnets, any protocol" },
-    { label: "Privileges", value: "Root / Administrator (creates the network interface)" },
+    { label: "Privileges", value: "CLI requires root / Administrator to create the network interface" },
     { label: "Tunnel modes", value: "Split tunnel; full tunnel on CLI and Windows (experimental)" },
     { label: "Authentication", value: "Per-client Ed25519 keys, authorized-keys style" },
     { label: "Server exposure", value: "No public IP, no open inbound port" },
@@ -128,13 +123,13 @@ export const ezvpn: Product = {
     },
     {
       group: "Addressing",
-      title: "No subnet planning",
-      body: "Client VPN addresses are assigned dynamically by the server, so there are no static IPs to keep collision-free.",
+      title: "Dynamic client addresses",
+      body: "Clients receive VPN addresses from the server's configured pools. Choose prefixes that don't overlap the networks you need to reach.",
     },
     {
       group: "Addressing",
       title: "Dual stack",
-      body: "Run the tunnel over IPv4, IPv6, or both at once — clients receive an address in each family the server enables. IPv6-only mode works but is still experimental.",
+      body: "Carry IPv4 traffic, IPv6 traffic, or both. Clients normally receive an address in each family that the server enables. IPv6-only mode is experimental.",
     },
     {
       group: "Addressing",
@@ -149,17 +144,17 @@ export const ezvpn: Product = {
     {
       group: "Addressing",
       title: "Forwarding rules can be permanent",
-      body: "Reaching hosts beyond the server itself is ordinary OS routing: enable IP forwarding and add a MASQUERADE rule once — or, for IPv6, skip NAT and announce the VPN prefix to the LAN with radvd. The rules are inert while the tunnel is down, so there are no PostUp / PostDown hooks to script.",
+      body: "To reach the site LAN, enable IP forwarding and allow forwarded traffic through the server firewall. Give replies a path back to the VPN prefix using NAT or a route. These rules can stay in place between sessions.",
     },
     {
       group: "Routing & DNS",
       title: "Won't swallow your own LAN",
-      body: "A split-tunnel route that overlaps the network you're sitting on is refused at connect, and again if that network appears mid-session — on desktop and iOS alike — so the tunnel never cuts off the gateway that carries it.",
+      body: "A split-tunnel route that overlaps your local network is refused at connect. The desktop CLI and Windows app also stop if that conflict appears during a session. The macOS and iOS apps disconnect on a physical network change.",
     },
     {
       group: "Routing & DNS",
       title: "The underlay stays off the tunnel",
-      body: "The server publishes its own transport addresses and the client pins host routes for any a routed prefix would capture, so even a full tunnel can't deadlock on itself. Running on top of another VPN? --exclude-direct-path keeps the tunnel off that overlay.",
+      body: "The client adds bypass routes for public server or relay addresses that a VPN route would capture. On the CLI, --exclude-direct-path prefers a direct path outside the specified CIDR or a relay when either is available.",
     },
     {
       group: "Routing & DNS",
@@ -178,8 +173,8 @@ export const ezvpn: Product = {
     },
     {
       group: "Security & performance",
-      title: "No tuning knobs",
-      body: "MTU 1280, Cubic, fixed windows: WireGuard-style protocol constants on both ends. Linux gets automatic TUN GSO offload; the macOS CLI data path was recently reworked for roughly 3× the upload and 2× the download throughput.",
+      title: "Fixed MTU and automatic offload",
+      body: "The tunnel MTU is 1280. QUIC uses Cubic by default with fixed send and receive windows, and Linux uses TUN GSO where available. The CLI offers congestion-control and initial-window overrides for testing.",
     },
   ],
   demo: {
@@ -207,7 +202,7 @@ flexaccess-keys show-auth-key --private-key-file client.key
     },
     {
       title: "Write the server config",
-      body: "Paste each client's ed25519-pub line into ./authorized_keys, one per line, and pick a VPN network. That is the whole config.",
+      body: "Paste each client's ed25519-pub line into ./authorized_keys, one per line. Choose a VPN prefix that doesn't overlap the LAN you want to reach.",
       code: `role = "vpnserver"
 
 [network]
@@ -225,19 +220,21 @@ secret_file = "./vpn-server.key"`,
       body: "It prints its endpoint ID on startup. No port to open, no IP to publish.",
       code: "sudo ezvpn server start -c vpn_server.toml",
       aside:
-        "To reach the rest of the site at its own addresses, enable net.ipv4.ip_forward and add a MASQUERADE rule for 10.0.0.0/24 on the server's outbound interface. The rules are harmless while the tunnel is down, so they can simply stay. IPv6 can be routed without NAT; docs/Server-Site-Gateway.md in the repo has the radvd setup.",
+        "For LAN access, set up IP forwarding, firewall rules, and a return path with NAT or routing. See docs/Server-Site-Gateway.md in the repo for both IPv4 and IPv6.",
     },
     {
       title: "Connect a client",
-      body: "Dial the server by its endpoint ID and route the private prefixes you need. Leave --route off to reach only the server itself.",
+      body: "Replace SERVER_ENDPOINT_ID with the ID printed by the server. This command reaches the server at its VPN address. For access to the LAN behind it, add --route with the site's IPv4 prefix or --route6 with its IPv6 prefix.",
       code: `sudo ezvpn client start \\
-  --server-node-id <SERVER_ENDPOINT_ID> \\
-  --auth-key-file ./client.key \\
-  --route 192.168.1.0/24
-
-ping 10.0.0.1   # the server's VPN address`,
+  --server-node-id "SERVER_ENDPOINT_ID" \\
+  --auth-key-file ./client.key`,
+    },
+    {
+      title: "Verify the connection",
+      body: "From a second terminal on the client, ping the server's VPN address.",
+      code: "ping 10.0.0.1",
       aside:
-        "On a Mac, iPhone, or Windows PC, the native app does the same: generate a key in-app, paste its public half into authorized_keys, add a profile with the server's endpoint ID, connect.",
+        "On a Mac, iPhone, or Windows PC, you can generate a key in the native app, add its public entry to the server's authorized_keys file, and connect with a profile using the server's endpoint ID.",
     },
   ],
   install: [
@@ -248,11 +245,11 @@ ping 10.0.0.1   # the server's VPN address`,
     {
       label: "Windows (elevated PowerShell)",
       command: "irm https://flexaccessdev.github.io/ezvpn/install.ps1 | iex",
-      note: "The CLI also needs wintun.dll from wintun.net next to ezvpn.exe. The Windows app bundles it.",
+      note: "Place the amd64 wintun.dll from wintun.net next to ezvpn.exe or in the system PATH. The Windows app bundles it.",
     },
   ],
   installNote:
-    "The installer downloads the latest release binary and verifies its checksum. Prebuilt binaries cover Linux amd64/arm64, Apple Silicon macOS, and Windows amd64. Client keys are generated with flexaccess-keys.",
+    "By default the installer downloads the latest stable release and verifies its checksum. Prebuilt binaries cover Linux amd64/arm64, Apple Silicon macOS, and Windows amd64. Client keys are generated with flexaccess-keys.",
   clients: [
     {
       platform: "CLI · client and server",
@@ -265,7 +262,7 @@ ping 10.0.0.1   # the server's VPN address`,
       platform: "macOS / iOS app",
       name: "ezvpn-apple",
       description:
-        "Native SwiftUI client with a packet-tunnel extension: dual-stack split tunnel (no full tunnel), multiple saved profiles, keys generated in-app and kept in the Keychain, split DNS on iOS, menu-bar controls on macOS. On a network change it disconnects rather than migrating the session — reconnect manually. The macOS build is a signed, notarized drag-to-Applications .dmg that needs no Apple developer account to run; iOS is built from source under your own team.",
+        "Native SwiftUI client with dual-stack split tunneling, saved profiles, Keychain-backed keys, iOS split DNS, and macOS menu-bar controls. Reconnect manually after a physical network change. On macOS, install the signed, notarized .dmg to Applications and approve the system extension in System Settings. On iOS, build and sign the app under your own Apple Developer team.",
       distribution: "macOS: signed .dmg · iOS: build from source",
       repo: `${GITHUB_ORG_URL}/ezvpn-apple`,
     },
@@ -294,7 +291,10 @@ ping 10.0.0.1   # the server's VPN address`,
       title: "Not a mesh, not site-to-site, not an anonymity tool",
       body: "ezvpn gives clients the server's network and nothing else: no client-to-client traffic, and no bridging of two LANs. If you want every device to run its own node and have a stable IP so peers can address each other, that's Tailscale's job — and its subnet routers cover the gateway arrangement too. ezvpn shares WireGuard's remote-access shape but not its site-to-site one: for a permanent link between two subnets, use WireGuard. And because relays can see connection metadata when they're involved, ezvpn is not for anonymity — only the payload is guaranteed private.",
     },
-    preReleaseNote("ezvpn"),
+    {
+      title: "Pre-1.0 · Keep both ends on the same core release",
+      body: "Compatibility between 0.0.x core releases is unsupported. Upgrade clients and servers together and refresh configs from the current examples. If the upgraded deployment still can't connect, you can regenerate the server identity key and update every client profile with the resulting endpoint ID.",
+    },
   ],
 };
 
@@ -305,7 +305,7 @@ export const flextunnel: Product = {
   metaDescription:
     "flextunnel is an open-source SOCKS5/HTTP proxy and port-forwarding split tunnel over QUIC: reach TCP services behind a server with server-side DNS, per-client Ed25519 keys, no root on either end, no open inbound port — and it isn't a VPN, so it needs no VPN profile, even on iOS. CLI, macOS and Windows tray app, and iOS app.",
   cardSummary:
-    "Reach TCP services behind a server over a local SOCKS5 / HTTP proxy or forwarded ports — with server-side DNS, host aliases, server-to-server bridges for networks the server can't reach directly, a zero-config --quick mode, and no admin rights on either end.",
+    "Reach private TCP services through local SOCKS5 / HTTP proxies or forwarded ports. One client can reach multiple servers on demand, with server-side DNS and a zero-config --quick mode for one-off sessions.",
   chips: ["proxy layer", "no root"],
   platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
   pickWhen: [
@@ -314,17 +314,17 @@ export const flextunnel: Product = {
     "You want it next to an existing VPN, or a five-minute throwaway tunnel",
   ],
   summary: [
-    "flextunnel gives you proxy-level access to hosts behind a server — without a VPN. The client runs local SOCKS5 and HTTP proxy listeners, and can bind local ports straight to server-side addresses; targets on the server-pushed tunnel list are carried over an encrypted QUIC connection to the server, which resolves DNS and makes the outbound TCP connection from its own network. Everything else connects directly from your device.",
+    "A flextunnel client configures each server as a named destination. The optional local SOCKS5 and HTTP proxies send matching requests through that destination over an encrypted QUIC connection. The server resolves hostnames and opens the TCP connection from its own network. Unmatched proxy requests connect directly from your device. Local port forwards always use a destination.",
     "Because it uses ordinary userspace sockets — no TUN device — neither the client nor the server needs root or admin rights. And because it isn't a VPN, it needs no VPN profile or network extension, so nothing stops you running one next to it, even on iOS.",
-    "Every connection is gated by a per-client Ed25519 keypair in the shared flexaccess-keys format; the server keeps an ssh-style authorized-keys file of the clients it admits. For a throwaway session, --quick skips key files and config entirely — each side just types in the other's endpoint ID.",
+    "Regular connections authenticate with per-client Ed25519 keys in the shared flexaccess-keys format. The server keeps an SSH-style authorized-keys file. For a throwaway session, --quick authenticates both ends with the endpoint IDs you exchange at the prompts.",
   ],
   facts: [
     { label: "Access level", value: "TCP via local SOCKS5 / HTTP proxy listeners or forwarded ports" },
     { label: "Privileges", value: "None — no root or admin on either end" },
-    { label: "DNS", value: "Resolved on the server's side of the network" },
-    { label: "Authentication", value: "Per-client Ed25519 keys, authorized-keys style" },
+    { label: "DNS", value: "Tunneled hostnames resolve on the destination server" },
+    { label: "Authentication", value: "Per-client Ed25519 keys or endpoint IDs in --quick mode" },
     { label: "VPN profile", value: "None — it isn't a VPN, so it sits beside one" },
-    { label: "Routing policy", value: "Set once on the server, pushed to every client" },
+    { label: "Routing policy", value: "Client selects a destination, server enforces its own allowlist" },
   ],
   features: [
     {
@@ -335,32 +335,27 @@ export const flextunnel: Product = {
     {
       group: "Access",
       title: "Local port forwarding",
-      body: "Bind a local port to any host:port on the server's network, so tools that can't use a proxy — databases, RDP, most GUIs — reach private services as if they were local. Per profile in the desktop and iOS apps; from config on the CLI.",
+      body: "Bind a loopback port to a host and port reached through a destination. Database clients, RDP, and other apps can connect to the local port. Set up forwards in the desktop or iOS app, or in the CLI client config.",
     },
     {
       group: "Access",
       title: "Zero privileges",
-      body: "Ordinary userspace sockets on both ends — no TUN device, so no root, no admin, no elevation prompts. The installer puts the binary in ~/.local/bin.",
+      body: "The client and server run with ordinary user privileges. The Linux and macOS CLI installer writes to ~/.local/bin. The Windows CLI installer needs elevation for its system-wide install.",
     },
     {
       group: "Routing",
-      title: "Split by default, enforced twice",
-      body: "Only targets on the server-pushed tunnel list go through the tunnel; everything else connects directly. The server enforces the same list as a whitelist on its side, so a misconfigured client can't reach past it.",
+      title: "Routes per destination",
+      body: "The client's most specific hostname or IP rule selects a server. That server checks the target against its own allowed domains and IP ranges. Requests through a proxy with no matching route connect directly.",
     },
     {
       group: "Routing",
-      title: "Server-side DNS, aliases, and forwarders",
-      body: "Reach names that only resolve on the server's network — or the server's own localhost. Map friendly names like server.internal, or wildcards like *.svc.internal, to addresses on its network, and forward chosen DNS suffixes to per-suffix upstream resolvers with failover and TCP fallback.",
-    },
-    {
-      group: "Routing",
-      title: "Server-to-server bridges",
-      body: "Chain servers together: one server forwards matching targets over a persistent, authenticated connection to another, which resolves and dials them from its own network — split-tunnel routing that reaches networks a single server can't. Single hop, so mutual bridges can't loop.",
+      title: "Server-side DNS and host aliases",
+      body: "Resolve private names on the destination server. The server can map exact names or wildcard suffixes to another hostname or IP. Use <name>.localhost.flextunnel.internal to reach the destination server's own loopback.",
     },
     {
       group: "Routing",
       title: "Quick ephemeral tunnels",
-      body: "flextunnel server start --quick and client start --quick: no key files, no config. Each side enters the other's endpoint ID in the terminal, the session full-tunnels for as long as you need it, and nothing is persisted. The server gives up if no client shows within five minutes.",
+      body: "Run flextunnel client start --quick and flextunnel server start --quick, then enter each side's endpoint ID at the other side's prompt. All requests through the enabled proxies use the tunnel. The session is temporary, and the server exits if the client fails to connect within five minutes.",
     },
     {
       group: "Security",
@@ -379,8 +374,8 @@ export const flextunnel: Product = {
     },
     {
       group: "Resilience & visibility",
-      title: "Survives outages",
-      body: "Auto-reconnect with backoff from the very first attempt. Local listeners stay bound, off-list targets keep connecting directly, and on-list requests are held for up to 45 s while the link comes back instead of failing.",
+      title: "Connects on demand",
+      body: "The first request to a destination waits up to 45 seconds while the client connects. A dropped connection is retried with backoff when requests need it. Unused connections close after five minutes by default, and other destinations can keep serving traffic.",
     },
     {
       group: "Resilience & visibility",
@@ -390,12 +385,12 @@ export const flextunnel: Product = {
     {
       group: "Resilience & visibility",
       title: "Live control panel",
-      body: "flextunnel client control attaches a read-only terminal panel to a running client: connection phase, direct or relay path, the pushed routing breakdown, and every port forward's live state.",
+      body: "flextunnel client control attaches a read-only terminal panel to a running client. It shows each destination's connection state and path, the configured routes, and the live state of port forwards.",
     },
     {
       group: "Resilience & visibility",
       title: "Built-in status page",
-      body: "From any connected client, http://flextunnel.internal shows the server's live status as a page or JSON — always tunneled, regardless of the routed set.",
+      body: "Through a local proxy, http://flextunnel.internal/ shows client status without dialing a server. Open /servers/<name>/ for that destination's server status. Both views also offer status.txt and status.json.",
     },
   ],
   demo: {
@@ -404,7 +399,7 @@ export const flextunnel: Product = {
     rows: 39,
     poster: "npt:1:11",
     title: "Watch a quick tunnel come up",
-    lede: "Two Linux hosts, recorded as typed, with no root on either. Both install flextunnel and run --quick, with no key files and no config. The client, on the right, prints its endpoint ID; the server, on the left, admits exactly that ID and prints its own; the client dials it and opens a SOCKS5 port. A second shell on the client then fetches a page that only the server's own loopback serves, and the panel shows the connection went direct. Quitting the panel disconnects, and nothing is saved on either host.",
+    lede: "Two Linux hosts install flextunnel and run --quick as ordinary users. On the right, the client prints its endpoint ID. On the left, the server authorizes exactly that ID and prints its own. The client dials it and opens a SOCKS5 port. A second client shell fetches a page served only on the server's loopback, and the panel shows the path went direct. Quitting the panel disconnects without saving keys or configuration.",
     label: "Terminal recording: a flextunnel quick-mode session between a server and a client",
     caption:
       "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The keyed setup for a lasting server is written out in the quick start below.",
@@ -423,16 +418,13 @@ flexaccess-keys show-auth-key --private-key-file client.key
     },
     {
       title: "Write the server config",
-      body: "Paste each client's ed25519-pub line into ./authorized_keys, then decide what goes through the tunnel. The routed set is set once here and pushed to every client.",
+      body: "Paste each client's ed25519-pub line into ./authorized_keys. Add the domains and IP ranges this server should accept. Its own loopback is always reachable by authorized clients.",
       code: `secret_file = "./server.key"
 authorized_keys_file = "./authorized_keys"
 
-# what clients may reach through the tunnel
-routed_domains = ["*.internal", "*.corp.example.com"]
-routed_cidrs   = ["10.0.0.0/8"]
-
-[host_aliases]
-"server.internal" = "127.0.0.1"`,
+# Optional targets behind this server
+routed_domains = ["*.corp.example"]
+routed_cidrs = ["10.0.0.0/8"]`,
       codeTitle: "server.toml",
     },
     {
@@ -441,17 +433,29 @@ routed_cidrs   = ["10.0.0.0/8"]
       code: "flextunnel server start -c server.toml",
     },
     {
-      title: "Connect a client and use it",
-      body: "Dial the server by its endpoint ID, then point tools at the local proxy. Use socks5h so names resolve on the server's side.",
-      code: `flextunnel client start \\
-  --server-node-id <SERVER_ENDPOINT_ID> \\
-  --auth-key-file client.key \\
-  --socks-port 1080
+      title: "Write the client config",
+      body: "Name the destination and replace SERVER_ENDPOINT_ID with the ID printed by the server. The example sends the same domains and IP ranges that the server allows to this destination.",
+      code: `socks_port = 1080
+auth_key_file = "./client.key"
 
-curl -x socks5h://127.0.0.1:1080 http://server.internal:8000/
-ssh -o ProxyCommand='nc -X 5 -x 127.0.0.1:1080 %h %p' user@db.internal`,
+[[destinations]]
+name = "office"
+server_node_id = "SERVER_ENDPOINT_ID"
+routed_domains = ["*.corp.example"]
+routed_cidrs = ["10.0.0.0/8"]`,
+      codeTitle: "client.toml",
+    },
+    {
+      title: "Start the client",
+      body: "The client opens the local SOCKS5 listener and dials a destination on its first request.",
+      code: "flextunnel client start -c client.toml",
+    },
+    {
+      title: "Use the tunnel",
+      body: "If a web service is listening on the server's loopback port 8000, fetch it from a second terminal on the client. Use socks5h so the proxy receives the hostname.",
+      code: "curl -x socks5h://127.0.0.1:1080 http://office.localhost.flextunnel.internal:8000/",
       aside:
-        "Just need a tunnel to a box you're sitting at? Run --quick on both ends instead: no keys, no config, each side types in the other's endpoint ID.",
+        "For a one-off session, run --quick on both ends and enter each side's endpoint ID at the other side's prompt.",
     },
   ],
   install: [
@@ -477,39 +481,42 @@ ssh -o ProxyCommand='nc -X 5 -x 127.0.0.1:1080 %h %p' user@db.internal`,
       repo: `${GITHUB_ORG_URL}/flextunnel`,
     },
     {
-      platform: "macOS / Windows app",
+      platform: "macOS / Windows app · client and server",
       name: "flextunnel-desktop",
       description:
-        "A menu-bar / system-tray app for macOS and Windows: any number of profiles connected at once, each with its own SOCKS5 / HTTP listeners and port forwards; keys generated in-app, connection-path view, live per-profile logs, profile export and import, and secrets kept in the macOS Keychain or Windows Credential Manager.",
-      distribution: "unsigned .dmg / .msi with every stable release",
+        "The menu-bar or system-tray app can run a client and a server at the same time. One client manages multiple destinations and shares its optional SOCKS5 and HTTP listeners across them. The app supports local port forwards, in-app keys, live logs, a connection-path view, and import and export for destinations and forwards. It encrypts stored secrets with a key kept in the macOS Keychain or Windows Credential Manager.",
+      distribution: "unsigned .dmg (Apple Silicon) / .msi (Windows x64)",
       repo: `${GITHUB_ORG_URL}/flextunnel/tree/main/crates/flextunnel-desktop`,
     },
     {
       platform: "iOS app",
       name: "flextunnel-ios",
       description:
-        "Browse private networks in a built-in browser — split by hostname when the tunnel set is name-based, everything through the tunnel otherwise — or forward localhost ports so other apps on the phone (SSH, RDP, databases) can reach them, with an opt-in, time-limited background keep-alive. Saved profiles, keys generated on-device and kept in the Keychain, no VPN profile required. Each release publishes an unsigned .ipa to sign under your own Apple team.",
-      distribution: "unsigned .ipa, self-signed",
+        "Browse private sites through the in-app browser or forward localhost ports for apps like SSH and RDP. One session can reach multiple saved destinations using their configured routes. The app keeps keys in the Keychain. Port forwarding offers an opt-in, time-limited background keep-alive. The app runs without a VPN profile.",
+      distribution: "alpha prerelease · unsigned .ipa to sign with your Apple Developer team",
       repo: `${GITHUB_ORG_URL}/flextunnel-ios`,
     },
   ],
   goodFor: [
     "Web UIs, SSH, RDP, and databases that are only reachable from the server's network",
-    "Shared or locked-down machines where you can't get admin rights",
+    "A device you control where you can run a user-space client without admin rights",
     "Sitting next to a corporate or personal VPN — it isn't one, so there's nothing to switch off",
-    "A five-minute throwaway tunnel to a box you're sitting at — with --quick",
+    "A throwaway TCP tunnel to a machine you can access, using --quick",
   ],
   notes: [
     {
       title: "Trusted clients, trusted host",
-      body: "flextunnel lets clients you trust reach a server you also run; it is not a multi-tenant service. An authorized client can reach whatever the server's network can — including the server's own localhost — so authorize keys accordingly and scope the server's network reach if that is too broad. The local proxy listeners are unauthenticated and bind 127.0.0.1 only, so the client host is assumed to be single-user.",
+      body: "Authorize keys only for trusted clients. Authorized clients can reach the server's loopback as well as targets allowed by its routing policy. Use host-level controls to limit the server's network reach. Any local user or process that can reach a proxy listener on 127.0.0.1 can use it without authenticating.",
     },
     {
       title: "Need UDP forwarding?",
       body: "flextunnel carries TCP only. If you need to forward UDP — WireGuard or OpenVPN over P2P, game servers, VoIP, or UDP services in Kubernetes that kubectl port-forward can't reach — use tunnel-rs: peer-to-peer TCP and UDP port forwarding for Linux, macOS, and Windows over the same encrypted QUIC transport, with the same no-open-port NAT traversal, the same flexaccess-keys Ed25519 authentication, and no root on either end. It's built for development and homelab use rather than production.",
       link: { label: "tunnel-rs on GitHub", href: `${GITHUB_ORG_URL}/tunnel-rs` },
     },
-    preReleaseNote("flextunnel"),
+    {
+      title: "Check configs when upgrading",
+      body: "Compare your server and client configs with the current examples before upgrading. Regular clients now declare their servers and routes in [[destinations]] tables.",
+    },
   ],
 };
 
@@ -557,7 +564,7 @@ export const sharedRepos: SharedRepo[] = [
     name: "flexaccess-iroh",
     kind: "transport crate",
     summary:
-      "The shared transport layer as code: relay configuration and the per-relay startup probe, the common endpoint builder, in-place home-relay failover for servers, and the endpoint-bound key authentication transcript. Its offline end-to-end suite proves failover against real relays, and a client can start while one relay is down. A fix lands here once and reaches every tool on its next tag bump.",
+      "The shared crate implements relay configuration, reachability probes, endpoint creation, in-place server relay failover, and endpoint-bound authentication. Each tool picks up changes when it updates its dependency.",
     repo: `${GITHUB_ORG_URL}/flexaccess-iroh`,
   },
   {
@@ -590,8 +597,8 @@ export const comparison: CompareRow[] = [
   },
   {
     label: "Privileges",
-    ezvpn: "Root / Administrator to create the network interface",
-    flextunnel: "None, on either end",
+    ezvpn: "CLI runs as root / Administrator",
+    flextunnel: "Runs with ordinary user privileges",
   },
   {
     label: "How apps connect",
@@ -601,7 +608,7 @@ export const comparison: CompareRow[] = [
   {
     label: "Authentication",
     ezvpn: "Per-client Ed25519 key (flexaccess-keys)",
-    flextunnel: "Per-client Ed25519 key (flexaccess-keys), or --quick with no keys at all",
+    flextunnel: "Per-client Ed25519 key (flexaccess-keys), or exchanged endpoint IDs in --quick mode",
   },
   {
     label: "Desktop apps",
@@ -611,7 +618,7 @@ export const comparison: CompareRow[] = [
   {
     label: "Phones",
     ezvpn: "iOS app, built from source under your own team",
-    flextunnel: "iOS app — browser and port forwards, no VPN profile; unsigned .ipa you sign yourself",
+    flextunnel: "iOS alpha with browser and port forwards, no VPN profile. Sign the unsigned .ipa with your Apple Developer team.",
   },
   {
     label: "Next to another VPN",

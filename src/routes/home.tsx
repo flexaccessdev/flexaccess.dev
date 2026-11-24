@@ -31,7 +31,7 @@ const sharedIdea: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: Waypoints,
     title: "NAT traversal built in",
-    body: "Direct paths are hole-punched through NAT and CGNAT. When none can be found, an encrypted relay carries the traffic, and a connection can upgrade from relayed to direct mid-life.",
+    body: "The tools try to establish a direct path through NAT and CGNAT. A relay carries encrypted traffic when a direct path is unavailable. A connection can switch to direct when a path opens up.",
   },
   {
     icon: Lock,
@@ -41,7 +41,7 @@ const sharedIdea: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: KeyRound,
     title: "Key-authenticated",
-    body: "Every client signs in with its own Ed25519 key, listed ssh-style in the server's authorized-keys file. Whoever runs the server decides exactly who gets in.",
+    body: "The server checks each regular client's Ed25519 public key against its authorized-keys file. In flextunnel's quick mode, peers authenticate using the endpoint IDs they exchange.",
   },
 ];
 
@@ -218,7 +218,7 @@ export default function Home() {
           <SectionHeading
             kicker="under the hood"
             title="One foundation, kept in its own repos"
-            lede="Both tools share one transport crate and one key format, so they never drift apart. Point both ends at two or more relays you run yourself and nothing touches public infrastructure."
+            lede="Both tools share a transport crate and key format. Configure both ends with the same list of at least two custom relays to avoid public iroh relays and discovery services."
           />
           <ul className="repo-grid">
             {sharedRepos.map((repo) => (

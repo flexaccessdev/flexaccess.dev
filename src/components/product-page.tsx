@@ -24,8 +24,8 @@ export function ProductPage({ product }: { product: Product }) {
   const flow = product.slug === "ezvpn" ? ezvpnFlow : flextunnelFlow;
   const flowFootnote =
     product.slug === "ezvpn"
-      ? "Only the prefixes you route go through the tunnel; the rest of your traffic never touches it."
-      : "Only targets on the server-pushed list go through the tunnel; everything else connects directly from your device.";
+      ? "In split-tunnel mode, the client routes the server's VPN address and any private prefixes you configure."
+      : "Each matching request goes through its destination. Unmatched proxy requests connect directly. Port forwards always use a destination.";
   // Sections alternate between the plain and the tinted background, whichever
   // of the optional ones are present.
   let sectionCount = 0;
@@ -86,7 +86,7 @@ export function ProductPage({ product }: { product: Product }) {
 
       <section className={sectionClass()}>
         <div className="container">
-          <SectionHeading kicker="how it works" title="One encrypted connection, dialled by identity" />
+          <SectionHeading kicker="how it works" title="Encrypted connections by endpoint ID" />
           <FlowDiagram
             items={flow}
             footnote={flowFootnote}
@@ -134,7 +134,7 @@ export function ProductPage({ product }: { product: Product }) {
         <div className="container">
           <SectionHeading
             kicker="quick start"
-            title="Up and running in four steps"
+            title="Set up a server and client"
             lede={
               <>
                 The CLI flow, condensed from the README. You'll need {product.name} on

@@ -12,10 +12,10 @@ export const ezvpnFlow: FlowItem[] = [
 ];
 
 export const flextunnelFlow: FlowItem[] = [
-  { kind: "node", icon: AppWindow, title: "proxy-aware app", sub: "or a forwarded port" },
-  { kind: "link", label: "SOCKS5 / HTTP on 127.0.0.1" },
+  { kind: "node", icon: AppWindow, title: "local app" },
+  { kind: "link", label: "local proxy or port forward" },
   { kind: "node", icon: Laptop, title: "flextunnel client", sub: "no root" },
-  { kind: "link", label: "one QUIC connection", sub: "direct or relayed", style: "tunnel" },
+  { kind: "link", label: "QUIC to selected destination", sub: "direct or relayed", style: "tunnel" },
   { kind: "node", icon: Server, title: "flextunnel server", sub: "no root · no open port", accent: true },
   { kind: "link", label: "resolves DNS, dials TCP" },
   { kind: "node", icon: Globe, title: "target host:port", sub: "on the server's network" },
