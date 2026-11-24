@@ -56,12 +56,9 @@
 .site-nav {
   display: flex;
   flex: 1;
+  justify-content: flex-end;
   align-items: center;
   gap: 4px;
-}
-
-.nav-github {
-  margin-left: auto;
 }
 
 .nav-link {
@@ -81,19 +78,6 @@
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  flex-shrink: 0;
-}
-
-.nav-github-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.nav-external-icon {
-  width: 14px;
-  height: 14px;
-  margin-left: -2px;
   flex-shrink: 0;
 }
 
@@ -1408,11 +1392,6 @@
     font-size: 0.85rem;
     gap: 4px;
     padding: 6px;
-  }
-
-  .nav-github-label,
-  .nav-external-icon {
-    display: none;
   }
 
   .nav-product-icon {

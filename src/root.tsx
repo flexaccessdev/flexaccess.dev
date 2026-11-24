@@ -6,7 +6,6 @@ import {
   ScrollRestoration,
   useLocation,
 } from "react-router";
-import { ArrowUpRight, Github } from "lucide-react";
 import type { Route } from "./+types/root";
 import indexStylesheet from "./index.css?url";
 import appStylesheet from "./app.css?url";
@@ -84,11 +83,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <a href="/flextunnel" className={navLinkClass(pathname, "/flextunnel")}>
                   <img src="/flextunnel.svg" alt="" className="nav-product-icon" />
                   flextunnel
-                </a>
-                <a href={GITHUB_ORG_URL} className="nav-link nav-github" aria-label="flexaccessdev on GitHub">
-                  <Github className="nav-github-icon" aria-hidden="true" />
-                  <span className="nav-github-label">GitHub</span>
-                  <ArrowUpRight className="nav-external-icon" aria-hidden="true" />
                 </a>
               </nav>
             </div>
