@@ -276,7 +276,7 @@ secret_file = "./vpn-server.key"`,
       platform: "Windows app",
       name: "ezvpn-windows",
       description:
-        "Native WinUI 3 app driving the ezvpn core through its C FFI: dual-stack split tunnel, multiple profiles, Ed25519 keys kept in Windows Credential Manager, live connection-path view. Closing the window hides it to the system tray with the tunnel still up. It runs elevated, so expect a UAC prompt at launch. The MSI bundles wintun.dll; it is unsigned and scoped for personal use on x64.",
+        "Native WinUI 3 app driving the ezvpn core through its C FFI: dual-stack split tunnel, multiple profiles, Ed25519 keys kept in Windows Credential Manager, live connection-path view. Closing the window hides it to the system tray with the tunnel still up. It runs elevated, so expect a UAC prompt at launch. The MSI bundles wintun.dll; it is unsigned and x64-only.",
       distribution: "unsigned .msi (x64)",
       repo: `${GITHUB_ORG_URL}/ezvpn-windows`,
     },
@@ -531,7 +531,7 @@ routed_cidrs = ["10.0.0.0/8"]`,
     },
     {
       title: "Need UDP forwarding?",
-      body: "flextunnel carries TCP only. If you need to forward UDP — WireGuard or OpenVPN over P2P, game servers, VoIP, or UDP services in Kubernetes that kubectl port-forward can't reach — use tunnel-rs: peer-to-peer TCP and UDP port forwarding for Linux, macOS, and Windows over the same encrypted QUIC transport, with the same no-open-port NAT traversal, the same flexaccess-keys Ed25519 authentication, and no root on either end. It's built for development and homelab use rather than production.",
+      body: "flextunnel carries TCP only. If you need to forward UDP — WireGuard or OpenVPN over P2P, game servers, VoIP, or UDP services in Kubernetes that kubectl port-forward can't reach — use tunnel-rs: peer-to-peer TCP and UDP port forwarding for Linux, macOS, and Windows over the same encrypted QUIC transport, with the same no-open-port NAT traversal, the same flexaccess-keys Ed25519 authentication, and no root on either end.",
       link: { label: "tunnel-rs on GitHub", href: `${GITHUB_ORG_URL}/tunnel-rs` },
     },
     {
