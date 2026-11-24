@@ -398,6 +398,17 @@ export const flextunnel: Product = {
       body: "From any connected client, http://flextunnel.internal shows the server's live status as a page or JSON — always tunneled, regardless of the routed set.",
     },
   ],
+  demo: {
+    src: "/demos/flextunnel.cast",
+    cols: 161,
+    rows: 39,
+    poster: "npt:1:11",
+    title: "Watch a quick tunnel come up",
+    lede: "Two Linux hosts, recorded as typed, with no root on either. Both install flextunnel and run --quick, with no key files and no config. The client, on the right, prints its endpoint ID; the server, on the left, admits exactly that ID and prints its own; the client dials it and opens a SOCKS5 port. A second shell on the client then fetches a page that only the server's own loopback serves, and the panel shows the connection went direct. Quitting the panel disconnects, and nothing is saved on either host.",
+    label: "Terminal recording: a flextunnel quick-mode session between a server and a client",
+    caption:
+      "Real output from both hosts, nothing edited; pauses longer than two seconds are shortened on playback. The keyed setup for a lasting server is written out in the quick start below.",
+  },
   quickStart: [
     {
       title: "Generate keys",

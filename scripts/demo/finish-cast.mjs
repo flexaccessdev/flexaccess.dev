@@ -1,4 +1,4 @@
-// Post-processes a demo recording made by record-ezvpn.sh (asciicast v2):
+// Post-processes a demo recording made by a record-*.sh script (asciicast v2):
 //
 //   node scripts/demo/finish-cast.mjs <file.cast> [hold-seconds]
 //
