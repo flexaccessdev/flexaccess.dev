@@ -309,11 +309,11 @@ export const flextunnel: Product = {
   name: "flextunnel",
   tagline: "The rootless split tunnel for private TCP services.",
   metaDescription:
-    "flextunnel is an open-source SOCKS5/HTTP proxy and port-forwarding split tunnel over QUIC: reach TCP services behind a server with server-side DNS, per-client Ed25519 keys, no root on either end, no open inbound port — and it isn't a VPN, so it needs no VPN profile, even on iOS. CLI, macOS and Windows tray app, and iOS app.",
+    "flextunnel is an open-source SOCKS5/HTTP proxy and port-forwarding split tunnel over QUIC: reach TCP services behind a server with server-side DNS, per-client Ed25519 keys, no root on either end, no open inbound port — and it isn't a VPN, so it needs no VPN profile, even on iOS. CLI, macOS and Windows tray app, and iOS and Android apps.",
   cardSummary:
     "Reach private TCP services through local SOCKS5 / HTTP proxies or forwarded ports. One client can reach multiple servers on demand, with server-side DNS and a zero-config --quick mode for one-off sessions.",
   chips: ["proxy layer", "no root"],
-  platforms: ["CLI", "Linux", "macOS", "Windows", "iOS"],
+  platforms: ["CLI", "Linux", "macOS", "Windows", "iOS", "Android"],
   pickWhen: [
     "You need specific TCP services — web UIs, SSH, RDP, databases — not a whole subnet",
     "You can't get root or admin on the machine you're sitting at",
@@ -341,7 +341,7 @@ export const flextunnel: Product = {
     {
       group: "Access",
       title: "Local port forwarding",
-      body: "Bind a loopback port to a host and port reached through a destination. Database clients, RDP, and other apps can connect to the local port. Set up forwards in the desktop or iOS app, or in the CLI client config.",
+      body: "Bind a loopback port to a host and port reached through a destination. Database clients, RDP, and other apps can connect to the local port. Set up forwards in the desktop, iOS, or Android app, or in the CLI client config.",
     },
     {
       group: "Access",
@@ -376,7 +376,7 @@ export const flextunnel: Product = {
     {
       group: "Security",
       title: "Not a VPN",
-      body: "No VPN profile, no network extension, no TUN device. Nothing stops you running it next to a corporate or personal VPN — including on iOS, where the app is a plain app.",
+      body: "No VPN profile, no network extension, no TUN device. Nothing stops you running it next to a corporate or personal VPN — including on iOS and Android, where the apps are plain apps.",
     },
     {
       group: "Resilience & visibility",
@@ -517,6 +517,14 @@ routed_cidrs = ["10.0.0.0/8"]`,
       distribution: "alpha prerelease · unsigned .ipa to sign with your Apple Developer team",
       repo: `${GITHUB_ORG_URL}/flextunnel-ios`,
     },
+    {
+      platform: "Android app",
+      name: "flextunnel-android",
+      description:
+        "Runs a SOCKS5 proxy on a fixed loopback port and local port forwards in one session, so any app on the phone — SSH and RDP clients, or Firefox through FoxyProxy — can reach private services. A foreground service keeps the session serving in the background. One session can reach multiple saved destinations using their configured routes. Stored secrets are sealed under an Android Keystore key. The app runs without a VPN. Android 14+, arm64 and x86_64.",
+      distribution: "alpha · unsigned .apk",
+      repo: `${GITHUB_ORG_URL}/flextunnel-android`,
+    },
   ],
   goodFor: [
     "Web UIs, SSH, RDP, and databases that are only reachable from the server's network",
@@ -639,7 +647,7 @@ export const comparison: CompareRow[] = [
   {
     label: "Phones",
     ezvpn: "iOS app, built from source under your own team",
-    flextunnel: "iOS alpha with browser and port forwards, no VPN profile. Sign the unsigned .ipa with your Apple Developer team.",
+    flextunnel: "iOS alpha with browser and port forwards, no VPN profile. Sign the unsigned .ipa with your Apple Developer team. Android alpha with a SOCKS5 proxy and port forwards as an unsigned .apk.",
   },
   {
     label: "Next to another VPN",

@@ -49,7 +49,7 @@ export const meta: Route.MetaFunction = () =>
   pageMeta({
     title: "flexaccess.dev — reach private networks without opening ports",
     description:
-      "Open-source tunneling and VPN utilities for Linux, macOS, Windows, and iOS. Clients dial the server by a stable cryptographic identity — NAT traversal and relay fallback built in — so the server needs no public IP, no inbound port, and no port forwarding.",
+      "Open-source tunneling and VPN utilities for Linux, macOS, Windows, iOS, and Android. Clients dial the server by a stable cryptographic identity — NAT traversal and relay fallback built in — so the server needs no public IP, no inbound port, and no port forwarding.",
     path: "/",
   });
 
