@@ -149,10 +149,14 @@ export function ProductPage({ product }: { product: Product }) {
 
       <section className={sectionClass()} id="install">
         <div className="container">
-          <SectionHeading kicker="install" title="Get the CLI" />
-          <InstallBlock commands={product.install} />
+          <SectionHeading kicker="install" title="Get the app or the CLI" />
+          <InstallBlock commands={[product.install.linux]} downloads={product.install.apps} />
+          <details className="install-more">
+            <summary>The CLI on macOS or Windows</summary>
+            <InstallBlock commands={product.install.otherCli} />
+          </details>
           <p className="install-note">
-            {product.installNote}{" "}
+            {product.install.note}{" "}
             <a href="/#keys">
               Set up {sharedKeys.name}
               <ArrowRight aria-hidden="true" />

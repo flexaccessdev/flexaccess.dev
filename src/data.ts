@@ -15,6 +15,26 @@ export interface InstallCommand {
   note?: string;
 }
 
+/** A desktop app, linked to its GitHub releases page (no pinned version). */
+export interface AppDownload {
+  /** Platform shown in the card's title bar, e.g. "macOS". */
+  label: string;
+  /** The release asset to pick on the releases page. */
+  file: string;
+  href: string;
+  note?: string;
+}
+
+export interface ProductInstall {
+  /** Linux: the CLI one-liner. */
+  linux: InstallCommand;
+  /** macOS and Windows: the desktop apps. */
+  apps: AppDownload[];
+  /** The CLI on macOS and Windows, shown collapsed under the apps. */
+  otherCli: InstallCommand[];
+  note: string;
+}
+
 export interface ProductNote {
   title: string;
   body: string;
@@ -72,8 +92,7 @@ export interface Product {
   /** Terminal recordings, each in its own section, the primary one first. */
   demos: ProductDemo[];
   quickStart: QuickStartStep[];
-  install: InstallCommand[];
-  installNote: string;
+  install: ProductInstall;
   clients: ClientApp[];
   goodFor: string[];
   notes?: ProductNote[];
@@ -243,19 +262,38 @@ secret_file = "./vpn-server.key"`,
         "On a Mac, iPhone, or Windows PC, you can generate a key in the native app, add its public entry to the server's authorized_keys file, and connect with a profile using the server's endpoint ID.",
     },
   ],
-  install: [
-    {
-      label: "Linux / macOS",
+  install: {
+    linux: {
+      label: "Linux · CLI",
       command: "curl -sSL https://flexaccessdev.github.io/ezvpn/install.sh | sudo bash",
     },
-    {
-      label: "Windows (elevated PowerShell)",
-      command: "irm https://flexaccessdev.github.io/ezvpn/install.ps1 | iex",
-      note: "Place the amd64 wintun.dll from wintun.net next to ezvpn.exe or in the system PATH. The Windows app bundles it.",
-    },
-  ],
-  installNote:
-    "By default the installer downloads the latest stable release and verifies its checksum. Prebuilt binaries cover Linux amd64/arm64, Apple Silicon macOS, and Windows amd64. Client keys are generated with flexaccess-keys.",
+    apps: [
+      {
+        label: "macOS · app",
+        file: "ezvpn.dmg",
+        href: `${GITHUB_ORG_URL}/ezvpn-apple/releases/latest`,
+        note: "Signed and notarized. Drag ezvpn to Applications, launch it, and approve the system extension in System Settings.",
+      },
+      {
+        label: "Windows · app",
+        file: "ezvpn.msi",
+        href: `${GITHUB_ORG_URL}/ezvpn-windows/releases/latest`,
+        note: "Unsigned, x64, with wintun.dll bundled. If SmartScreen warns, choose More info → Run anyway. The app runs elevated, so expect a UAC prompt at launch.",
+      },
+    ],
+    otherCli: [
+      {
+        label: "macOS",
+        command: "curl -sSL https://flexaccessdev.github.io/ezvpn/install.sh | sudo bash",
+      },
+      {
+        label: "Windows (elevated PowerShell)",
+        command: "irm https://flexaccessdev.github.io/ezvpn/install.ps1 | iex",
+        note: "Place the amd64 wintun.dll from wintun.net next to ezvpn.exe or in the system PATH.",
+      },
+    ],
+    note: "The CLI installer downloads the latest stable release and verifies its checksum. Prebuilt CLI binaries cover Linux amd64/arm64, Apple Silicon macOS, and Windows amd64. The apps generate client keys in-app; on the command line, use flexaccess-keys.",
+  },
   clients: [
     {
       platform: "CLI · client and server",
@@ -479,19 +517,38 @@ routed_cidrs = ["10.0.0.0/8"]`,
         "For a one-off session, run --quick on both ends and enter each side's endpoint ID at the other side's prompt.",
     },
   ],
-  install: [
-    {
-      label: "Linux / macOS",
+  install: {
+    linux: {
+      label: "Linux · CLI",
       command: "curl -sSL https://flexaccessdev.github.io/flextunnel/install.sh | bash",
     },
-    {
-      label: "Windows (elevated PowerShell)",
-      command: "irm https://flexaccessdev.github.io/flextunnel/install.ps1 | iex",
-      note: "Elevation is only for the installer, which writes to Program Files. Running flextunnel needs none.",
-    },
-  ],
-  installNote:
-    "No root needed to run: on Linux/macOS the installer places the binary in ~/.local/bin. Prebuilt binaries cover Linux amd64/arm64, Apple Silicon macOS, and Windows amd64; a container image is published at ghcr.io/flexaccessdev/flextunnel. Client keys are generated with flexaccess-keys.",
+    apps: [
+      {
+        label: "macOS · desktop app",
+        file: "flextunnel-desktop-macos-arm64.dmg",
+        href: `${GITHUB_ORG_URL}/flextunnel/releases/latest`,
+        note: "Unsigned, Apple Silicon. Drag flextunnel.app to Applications; if macOS says it is damaged, run xattr -cr /Applications/flextunnel.app.",
+      },
+      {
+        label: "Windows · desktop app",
+        file: "flextunnel-desktop-windows-amd64.msi",
+        href: `${GITHUB_ORG_URL}/flextunnel/releases/latest`,
+        note: "Unsigned, x64. If SmartScreen warns, choose More info → Run anyway.",
+      },
+    ],
+    otherCli: [
+      {
+        label: "macOS",
+        command: "curl -sSL https://flexaccessdev.github.io/flextunnel/install.sh | bash",
+      },
+      {
+        label: "Windows (elevated PowerShell)",
+        command: "irm https://flexaccessdev.github.io/flextunnel/install.ps1 | iex",
+        note: "Elevation is only for the installer, which writes to Program Files. Running flextunnel needs none.",
+      },
+    ],
+    note: "No root needed to run the CLI: on Linux/macOS the installer places the binary in ~/.local/bin. Prebuilt CLI binaries cover Linux amd64/arm64, Apple Silicon macOS, and Windows amd64; a container image is published at ghcr.io/flexaccessdev/flextunnel. The desktop app generates client keys in-app; on the command line, use flexaccess-keys.",
+  },
   clients: [
     {
       platform: "CLI · client and server",
